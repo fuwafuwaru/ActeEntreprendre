@@ -9,7 +9,11 @@ public class Progress extends JFrame{
 	private ButtonContainer bc;
 	public Progress(Thread thread, Chromagram chr, ButtonContainer butcon){
 		this.setSize(300, 80);
+<<<<<<< HEAD
 		this.setTitle("*** Génération du chromagram ***");
+=======
+		this.setTitle("*** Progression ***");
+>>>>>>> a86d86a99729cf547d7faf3628c0e52733ef4015
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocationRelativeTo(null);
 		bc = butcon;
@@ -35,9 +39,12 @@ public class Progress extends JFrame{
 	public JProgressBar getBar(){
 		return this.bar;
 	}
+<<<<<<< HEAD
 	
 	public void end(){
 		System.out.println("fermeture de la fenêtre de chargement");
 		this.dispose();
 	}
+=======
+>>>>>>> a86d86a99729cf547d7faf3628c0e52733ef4015
 }

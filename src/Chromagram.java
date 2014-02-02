@@ -1,17 +1,27 @@
 import javax.sound.sampled.*;
 import javax.swing.JProgressBar;
 import javax.swing.UIManager;
+<<<<<<< HEAD
 import javax.swing.JFrame;
+=======
+>>>>>>> a86d86a99729cf547d7faf3628c0e52733ef4015
 
 import java.io.*;
 
 
 public class Chromagram implements Runnable {
 	private int numberOfData = 1000;
+<<<<<<< HEAD
 	public ChromaVector[] chromagram;
 	public Chord[] chordSerie;
 	private static final int FFT_SIZE = 1024;
 	public Complex[][] spectrum; 
+=======
+	public ChromaVector[] chromagram = new ChromaVector[numberOfData];
+	public Chord[] chordSerie = new Chord[numberOfData];
+	private static final int FFT_SIZE = 1024;
+	public Complex[][] spectrum = new Complex[numberOfData][FFT_SIZE]; 
+>>>>>>> a86d86a99729cf547d7faf3628c0e52733ef4015
 	private File sound;
 	private AudioInputStream stream;
 	private String name;
@@ -60,9 +70,12 @@ public class Chromagram implements Runnable {
 	}
 	
 	private void init(){
+<<<<<<< HEAD
 		chromagram = new ChromaVector[numberOfData];
 		chordSerie = new Chord[numberOfData];
 		spectrum = new Complex[numberOfData][FFT_SIZE];
+=======
+>>>>>>> a86d86a99729cf547d7faf3628c0e52733ef4015
 		for(int k = 0; k<spectrum.length;k++){
 			for(int i = 0; i < FFT_SIZE; i++){
 				spectrum[k][i] = new Complex(0,0);
@@ -78,8 +91,11 @@ public class Chromagram implements Runnable {
 	public void setStream(){
 		try{
 			stream = AudioSystem.getAudioInputStream(sound);
+<<<<<<< HEAD
 			numberOfData = stream.available()/(2*2*FFT_SIZE*resamplingRate); //On divise par 2 car sons 16 bits la plupart du temps et encore par deux pour la stéréo
 			System.out.println(numberOfData);
+=======
+>>>>>>> a86d86a99729cf547d7faf3628c0e52733ef4015
 		}catch(IOException e){
 			System.out.println("IOException");
 		}catch(UnsupportedAudioFileException e){
@@ -100,6 +116,7 @@ public class Chromagram implements Runnable {
 		return limitation;
 	}
 	
+<<<<<<< HEAD
 	
 	
 	public void process() throws IOException{
@@ -107,6 +124,12 @@ public class Chromagram implements Runnable {
 		//setFile();
 		//setStream();
 		bar.setMaximum(numberOfData-1);
+=======
+	public void process() throws IOException{
+		System.out.println("Signal processing now taking place ...");
+		setFile();
+		setStream();
+>>>>>>> a86d86a99729cf547d7faf3628c0e52733ef4015
 		int frameSize = stream.getFormat().getFrameSize();
 		//We multiply by the resampling rate the buffer size in order to get an array of the desired size for the
 		//fft after resampling
@@ -138,6 +161,7 @@ public class Chromagram implements Runnable {
 	 * without changes, converts from 44100Hz to 11025Hz.
 	 */
 	public double[] preProcess(byte [] b){
+<<<<<<< HEAD
 		if(stream.getFormat().getChannels() == 1){
 			return resample(convertToInt(b));
 		}
@@ -157,6 +181,9 @@ public class Chromagram implements Runnable {
 	class ChannelNumberException extends Exception{
 		 public ChannelNumberException() { super(); }
 		 public ChannelNumberException(String message) { super(message); }
+=======
+		return resample(convertToInt(b));
+>>>>>>> a86d86a99729cf547d7faf3628c0e52733ef4015
 	}
 	
 	public double[] resample(int[] array){
@@ -191,10 +218,16 @@ public class Chromagram implements Runnable {
 		if(bar == null){
 			System.out.println("bar null");
 		}
+<<<<<<< HEAD
 		
 		while(stream.read(buffer) != -1 && k < numberOfData){
 			stream.mark(buffer.length + 1); //On marque cette nouvelle position du stream et on tolère la lecture d'un nombre suffisant de byte
 			bar.setValue(k);
+=======
+		while(stream.read(buffer) != -1 && k < numberOfData){
+			stream.mark(buffer.length + 1); //On marque cette nouvelle position du stream et on tolère la lecture d'un nombre suffisant de byte
+			bar.setValue((int) k);
+>>>>>>> a86d86a99729cf547d7faf3628c0e52733ef4015
 			if(notStarted){
 				int j = 0;
 				double tmp = 0.;
@@ -219,7 +252,11 @@ public class Chromagram implements Runnable {
 				chordSerie[k] = null;
 			}
 			else{
+<<<<<<< HEAD
 				if(k > 0 && chordSerie[k-1] != null){
+=======
+				if(chordSerie[k-1] != null){
+>>>>>>> a86d86a99729cf547d7faf3628c0e52733ef4015
 					chordSerie[k] = chrv.findMaxWeightedCorrelation(chordSerie[k-1]);
 				}
 				else{
@@ -231,9 +268,15 @@ public class Chromagram implements Runnable {
 				stream.reset(); //on remet le marqueur position du stream à la valeur précédente
 				stream.skip((long) (buffer.length*overlay));//Recouvrement de overlay
 			}
+<<<<<<< HEAD
 			/*else{
 				System.out.println("le marqueur n'a pas été appelé");
 			}*/
+=======
+			else{
+				System.out.println("le marqueur n'a pas été appelé");
+			}
+>>>>>>> a86d86a99729cf547d7faf3628c0e52733ef4015
 		}
 	}
 	
@@ -256,6 +299,7 @@ public class Chromagram implements Runnable {
 	}
 	
 	
+<<<<<<< HEAD
 	public int[] stereoToMono(int[] array){
 		System.out.println("Début de la conversion en mono");
 		int[] array2 = new int[array.length/2];
@@ -265,6 +309,8 @@ public class Chromagram implements Runnable {
 		System.out.println("La conversion en mono s'est correctement déroulée");
 		return array2;
 	}
+=======
+>>>>>>> a86d86a99729cf547d7faf3628c0e52733ef4015
 	
 	/*public void recognize(){
 		int i = 0;
@@ -317,12 +363,18 @@ public class Chromagram implements Runnable {
 		Fenetre fen = new Fenetre();
 	}
 
+<<<<<<< HEAD
 	
+=======
+>>>>>>> a86d86a99729cf547d7faf3628c0e52733ef4015
 	@Override
 	public void run() {
 		try {
 			process();
+<<<<<<< HEAD
 			((Progress) bar.getParent()).end();
+=======
+>>>>>>> a86d86a99729cf547d7faf3628c0e52733ef4015
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
