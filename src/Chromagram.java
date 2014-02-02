@@ -1,16 +1,17 @@
 import javax.sound.sampled.*;
 import javax.swing.JProgressBar;
 import javax.swing.UIManager;
+import javax.swing.JFrame;
 
 import java.io.*;
 
 
 public class Chromagram implements Runnable {
 	private int numberOfData = 1000;
-	public ChromaVector[] chromagram = new ChromaVector[numberOfData];
-	public Chord[] chordSerie = new Chord[numberOfData];
+	public ChromaVector[] chromagram;
+	public Chord[] chordSerie;
 	private static final int FFT_SIZE = 1024;
-	public Complex[][] spectrum = new Complex[numberOfData][FFT_SIZE]; 
+	public Complex[][] spectrum; 
 	private File sound;
 	private AudioInputStream stream;
 	private String name;
@@ -59,6 +60,9 @@ public class Chromagram implements Runnable {
 	}
 	
 	private void init(){
+		chromagram = new ChromaVector[numberOfData];
+		chordSerie = new Chord[numberOfData];
+		spectrum = new Complex[numberOfData][FFT_SIZE];
 		for(int k = 0; k<spectrum.length;k++){
 			for(int i = 0; i < FFT_SIZE; i++){
 				spectrum[k][i] = new Complex(0,0);
@@ -74,6 +78,8 @@ public class Chromagram implements Runnable {
 	public void setStream(){
 		try{
 			stream = AudioSystem.getAudioInputStream(sound);
+			numberOfData = stream.available()/(2*2*FFT_SIZE*resamplingRate); //On divise par 2 car sons 16 bits la plupart du temps et encore par deux pour la stéréo
+			System.out.println(numberOfData);
 		}catch(IOException e){
 			System.out.println("IOException");
 		}catch(UnsupportedAudioFileException e){
@@ -94,10 +100,13 @@ public class Chromagram implements Runnable {
 		return limitation;
 	}
 	
+	
+	
 	public void process() throws IOException{
 		System.out.println("Signal processing now taking place ...");
-		setFile();
-		setStream();
+		//setFile();
+		//setStream();
+		bar.setMaximum(numberOfData-1);
 		int frameSize = stream.getFormat().getFrameSize();
 		//We multiply by the resampling rate the buffer size in order to get an array of the desired size for the
 		//fft after resampling
@@ -129,7 +138,25 @@ public class Chromagram implements Runnable {
 	 * without changes, converts from 44100Hz to 11025Hz.
 	 */
 	public double[] preProcess(byte [] b){
-		return resample(convertToInt(b));
+		if(stream.getFormat().getChannels() == 1){
+			return resample(convertToInt(b));
+		}
+		else if(stream.getFormat().getChannels() == 2){
+			return resample(stereoToMono(convertToInt(b)));
+		}
+		else{
+			try {
+				throw (new Chromagram.ChannelNumberException("Nombre de canaux invalide"));
+			} catch (ChannelNumberException e) {
+				System.out.println("Le nombre de canaux n'est pas géré");
+			}
+			return null;
+		}
+	}
+	
+	class ChannelNumberException extends Exception{
+		 public ChannelNumberException() { super(); }
+		 public ChannelNumberException(String message) { super(message); }
 	}
 	
 	public double[] resample(int[] array){
@@ -164,9 +191,10 @@ public class Chromagram implements Runnable {
 		if(bar == null){
 			System.out.println("bar null");
 		}
+		
 		while(stream.read(buffer) != -1 && k < numberOfData){
 			stream.mark(buffer.length + 1); //On marque cette nouvelle position du stream et on tolère la lecture d'un nombre suffisant de byte
-			bar.setValue((int) k);
+			bar.setValue(k);
 			if(notStarted){
 				int j = 0;
 				double tmp = 0.;
@@ -191,7 +219,7 @@ public class Chromagram implements Runnable {
 				chordSerie[k] = null;
 			}
 			else{
-				if(chordSerie[k-1] != null){
+				if(k > 0 && chordSerie[k-1] != null){
 					chordSerie[k] = chrv.findMaxWeightedCorrelation(chordSerie[k-1]);
 				}
 				else{
@@ -203,9 +231,9 @@ public class Chromagram implements Runnable {
 				stream.reset(); //on remet le marqueur position du stream à la valeur précédente
 				stream.skip((long) (buffer.length*overlay));//Recouvrement de overlay
 			}
-			else{
+			/*else{
 				System.out.println("le marqueur n'a pas été appelé");
-			}
+			}*/
 		}
 	}
 	
@@ -228,6 +256,15 @@ public class Chromagram implements Runnable {
 	}
 	
 	
+	public int[] stereoToMono(int[] array){
+		System.out.println("Début de la conversion en mono");
+		int[] array2 = new int[array.length/2];
+		for(int k = 0; k < array.length; k+=2){
+			array2[k/2] = (array[k]+array[k+1])/2;
+		}
+		System.out.println("La conversion en mono s'est correctement déroulée");
+		return array2;
+	}
 	
 	/*public void recognize(){
 		int i = 0;
@@ -280,10 +317,12 @@ public class Chromagram implements Runnable {
 		Fenetre fen = new Fenetre();
 	}
 
+	
 	@Override
 	public void run() {
 		try {
 			process();
+			((Progress) bar.getParent()).end();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

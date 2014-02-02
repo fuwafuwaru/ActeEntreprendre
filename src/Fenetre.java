@@ -12,7 +12,6 @@ public class Fenetre extends JFrame{
 		 this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		 this.setLocationRelativeTo(null);
 		 this.setResizable(true);
-		 
 		 JSplitPane split;
 		 //JSplitPane split2; pour plus tard
 		 
