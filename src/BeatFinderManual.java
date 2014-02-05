@@ -37,11 +37,7 @@ public class BeatFinderManual {
 			addKeyListener(cont);
 			this.setTitle("BeatFinder");
 		    this.setSize(600, 300);
-<<<<<<< HEAD
 		    this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-=======
-		    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
->>>>>>> a86d86a99729cf547d7faf3628c0e52733ef4015
 		    this.setLocationRelativeTo(null);
 		    this.add(cont);
 		    this.setVisible(true);

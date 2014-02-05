@@ -47,7 +47,7 @@ public class SoundPanel extends JPanel {
 			g.setColor(Color.WHITE);
 			g.fillRect(0, 0, w, h);
 			g.setColor(Color.BLACK);
-			for(int k=0; k<this.getWidth(); k+=2){;
+			for(int k=0; k<this.getWidth() && k < graph.length; k+=2){;
 				g.fillRect(k,h-((int) graph[k].abs())/100,2,((int) graph[k].abs()));
 			}
 		}catch(NullPointerException e){

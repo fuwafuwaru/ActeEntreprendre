@@ -1,29 +1,45 @@
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.ListIterator;
 
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneLayout;
 
 
 public class AmplitudeScrollPane extends JScrollPane {
 	
 	private Envelope e;
+	private boolean launched = false;
+	private DrawingPanel drawingPanel;
 	
-	AmplitudeScrollPane(Envelope env){
-		
+	AmplitudeScrollPane(DrawingPanel dp){
+		this.setLayout(new ScrollPaneLayout());
+		this.setPreferredSize(new Dimension(1500, 400));
+		drawingPanel = dp;
+		this.add(drawingPanel);
+		this.setVisible(true);
 	}
 	
-	@Override
+	AmplitudeScrollPane(Envelope env){
+		e = env;
+		this.setVisible(true);
+	}
+	
+	public Envelope getEnvelope(){
+		return drawingPanel.getEnvelope();
+	}
+	
+	public void setLaunched(){
+		launched = true;
+		drawingPanel.setLaunched();
+	}
+	
+	
 	public void paint(Graphics g){
-		ListIterator<EnvPoint> iter;
-		int i = 0;
-		int h = this.getHeight();
-		int w = this.getWidth();
-		EnvPoint point;
-		g.setColor(Color.BLUE);
-		for(iter = e.currentGraph.listIterator(0); iter.hasNext();){
-			point = iter.next();
-			g.fillRect(i, (int) (h*(1-point.getY())), 1, (int) (h*point.getY()));
-		}
+		super.paint(g);
+		drawingPanel.paint(g);
 	}
 }

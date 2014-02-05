@@ -4,20 +4,16 @@ import java.io.IOException;
 
 public class Fenetre extends JFrame{
 	 private SoundPanel snd;
-	 
+	 private AmplitudeScrollPane asp;
 	 public Fenetre(){
 		 
 		 this.setTitle("Fenetre principale");
-		 this.setSize(1000, 600);
+		 this.setSize(1300, 900);
 		 this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		 this.setLocationRelativeTo(null);
 		 this.setResizable(true);
-<<<<<<< HEAD
-=======
-		 
->>>>>>> a86d86a99729cf547d7faf3628c0e52733ef4015
 		 JSplitPane split;
-		 //JSplitPane split2; pour plus tard
+		 JSplitPane split2;
 		 
 		 JPanel inter = new JPanel();
 		 
@@ -26,16 +22,14 @@ public class Fenetre extends JFrame{
 		 snd.setParentContainer(this);
 		 snd.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
 		 
+		 asp = new AmplitudeScrollPane(new DrawingPanel(new Envelope()));
+		 asp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		 
 		 ButtonContainer buttonContainer = new ButtonContainer();
 		 BeatFinderManual bfm = new BeatFinderManual(buttonContainer);
 		 buttonContainer.setParentContainer(this);
 		 buttonContainer.setAssociatedPanel(snd);
 		 
-		 /*JPanel containerButton = new JPanel();
-		 containerButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-		 containerButton.add(buttonContainer, BorderLayout.CENTER);
-		 containerButton.setSize(280, this.getHeight());*/
 		 
 		 inter.setLayout(new BorderLayout());
 		 inter.add(snd, BorderLayout.CENTER);
@@ -45,14 +39,22 @@ public class Fenetre extends JFrame{
 		 split.setOneTouchExpandable(true);
 		 split.setDividerLocation(200);
 		 
+		 split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, split, asp);
+		 split2.setOneTouchExpandable(true);
+		 split2.setDividerLocation(this.getHeight() - 400);
+
 		 //this.setContentPane(inter);
-		 this.setContentPane(split);
+		 this.setContentPane(split2);
 		 this.setVisible(true);
 	 }
 	 
 	 
 	 public SoundPanel getSoundPanel(){
 		 return snd;
+	 }
+	 
+	 public AmplitudeScrollPane getAmplitudeScrollPane(){
+		 return asp;
 	 }
 	 
 }

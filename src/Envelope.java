@@ -1,14 +1,21 @@
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
 
 public class Envelope {
 	private int index = 0;
-	protected LinkedList<EnvPoint> currentGraph;
+	//protected ArrayList<EnvPoint> currentGraph;
+	protected EnvPoint[] currentGraph = new EnvPoint[500000];
 	private double mMinValue = 1.0e-7;
 	private double mMaxValue = 2.0;
 	private double mDefaultValue = 1.0;
+	
+	
+	Envelope(){
+		//currentGraph = new ArrayList<EnvPoint>();
+	}
 	
 	public void rescale(double minValue, double maxValue)
 	{
@@ -23,13 +30,15 @@ public class Envelope {
 
 	   // rescale all points
 	   EnvPoint point;
-	   for(ListIterator<EnvPoint> iter = currentGraph.listIterator(0); iter.hasNext();) {
+	   /*for(ListIterator<EnvPoint> iter = currentGraph.listIterator(0); iter.hasNext();) {
 		  point = iter.next();
 	      factor = (point.getY() - oldMinValue) / (oldMaxValue - oldMinValue);
 	      point.setY(mMinValue + (mMaxValue - mMinValue) * factor);
-	   }
+	   }*/
+	   
 
 	}
+	
 	
 	
 	
@@ -42,18 +51,24 @@ public class Envelope {
 		return index;
 	}
 	
-	public void clip (int[] array, int offsetInArray, int length){
-		for(int k = offsetInArray; k < Math.max(array.length, offsetInArray+length - 1); k++){
+	//Add the values of an array at the end of the list
+	public void clip (double[] array, int offsetInArray, int length){
+		/*for(int k = offsetInArray; k < Math.max(array.length, offsetInArray+length - 1); k++){
 			currentGraph.add(new EnvPoint(array[k]));
+		}*/
+		int k = 0;
+		for(k = 0; k < Math.max(array.length, offsetInArray+length - 1) && k+index < 500000; k++){
+			currentGraph[index+k] = new EnvPoint(array[k+offsetInArray]);
 		}
+		index += array.length;
 	}
 	
-	public void clipWithOffset(int[] array, int offsetInArray, int length, int offset){
+	/*public void clipWithOffset(int[] array, int offsetInArray, int length, int offset){
 		for(int k = 0; k<offset; k++){
 			currentGraph.add(new EnvPoint(0));
 		}
 		clip(array, offsetInArray, length);
-	}
+	}*/
 	
 	
 }

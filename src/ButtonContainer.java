@@ -1,19 +1,13 @@
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-<<<<<<< HEAD
 import javax.swing.JFileChooser;
-=======
->>>>>>> a86d86a99729cf547d7faf3628c0e52733ef4015
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.*;
-<<<<<<< HEAD
 import java.io.File;
-=======
->>>>>>> a86d86a99729cf547d7faf3628c0e52733ef4015
 import java.io.IOException;
 
 public class ButtonContainer extends JPanel implements ActionListener {
@@ -34,20 +28,16 @@ public class ButtonContainer extends JPanel implements ActionListener {
 	private JLabel tempoLab;
 	private JLabel measureLab;
 	private JLabel timeInMeasureLab;
-<<<<<<< HEAD
 	private JFileChooser choixMusique = new JFileChooser("/home/Anis/workspace/ActeEntreprendre/sons/");
 	private JButton choisirMusique;
 	private JLabel nomMusique;
 	private File file;
 	private String cheminMusique;
-=======
->>>>>>> a86d86a99729cf547d7faf3628c0e52733ef4015
 	
 	
 	public ButtonContainer(){		
 		this.setSize(280, 600);
 		this.setLayout(new BorderLayout(10, 10));
-<<<<<<< HEAD
 		this.setLayout(new GridLayout(11, 1, 5, 5));
 		this.setBorder(BorderFactory.createTitledBorder("ToolBox"));
 		
@@ -56,11 +46,6 @@ public class ButtonContainer extends JPanel implements ActionListener {
 		choixBorder.setTitleFont(choixBorder.getTitleFont().deriveFont(Font.BOLD ));
 		choisirMusique.setBorder(choixBorder);
 		
-=======
-		this.setLayout(new GridLayout(9, 1, 5, 5));
-		this.setBorder(BorderFactory.createTitledBorder("ToolBox"));
-		
->>>>>>> a86d86a99729cf547d7faf3628c0e52733ef4015
 		launch = new JButton("Get Chromagram !");
 		TitledBorder launchBorder = BorderFactory.createTitledBorder("Launch");
 		launchBorder.setTitleFont(launchBorder.getTitleFont().deriveFont(Font.BOLD ));
@@ -106,23 +91,15 @@ public class ButtonContainer extends JPanel implements ActionListener {
 	    nthTimeBorder.setTitleFont(nthTimeBorder.getTitleFont().deriveFont(Font.BOLD ));
 		timeInMeasureLab.setBorder(nthTimeBorder);
 	    
-<<<<<<< HEAD
 	    nomMusique = new JLabel("Pas de musique encore sélectionnée");
 		
 	    choisirMusique.addActionListener(this);
-=======
-	    
-	    
->>>>>>> a86d86a99729cf547d7faf3628c0e52733ef4015
 	    launch.addActionListener(this);
 	    more.addActionListener(this);
 	    less.addActionListener(this);
 	    
-<<<<<<< HEAD
 	    this.add(choisirMusique);
 	    this.add(nomMusique);
-=======
->>>>>>> a86d86a99729cf547d7faf3628c0e52733ef4015
 	    this.add(launch);
 	    this.add(more);
 	    this.add(less);
@@ -169,13 +146,13 @@ public class ButtonContainer extends JPanel implements ActionListener {
 			 }*/
 			
 			//Chromagram chr = new Chromagram("/home/anis/workspace/acteEntreprendre/sons/dresden.wav");
-<<<<<<< HEAD
 			//Chromagram chr = new Chromagram("sons/dresden.wav");
 			if(cheminMusique != null){
 				System.out.println(cheminMusique);
 				Chromagram chr = new Chromagram(cheminMusique);
 				setCurrentChromagram(chr);
 				chr.setPanel(parentContainer.getSoundPanel());
+				chr.setAmplitudeScrollPane(parentContainer.getAmplitudeScrollPane());
 				tempoLab.setText(String.valueOf(tempo));
 				Thread thread = new Thread(chr);
 				Progress prog = new Progress(thread, chr, this);
@@ -195,25 +172,6 @@ public class ButtonContainer extends JPanel implements ActionListener {
 			else{
 				new MusiqueDialog(this.getWidth()/2, this.getHeight()/2);
 			}
-=======
-			Chromagram chr = new Chromagram("sons/dresden.wav");
-			setCurrentChromagram(chr);
-			chr.setPanel(parentContainer.getSoundPanel());
-			tempoLab.setText(String.valueOf(tempo));
-			Thread thread = new Thread(chr);
-			Progress prog = new Progress(thread, chr, this);
-			try {
-				thread.join();
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			if(isLaunched){
-				musicTime.setText(String.valueOf(chr.getMusicTime(index)) + " s");
-				ChromaVector cv = currentChromagram.chromagram[index];
-				alledgedChord.setText(String.valueOf(cv.findMaxCorrelation()));	
-			}		
->>>>>>> a86d86a99729cf547d7faf3628c0e52733ef4015
 		 }
 		
 		//Attention la localisation en mesure ne marche que pour du 4/4
@@ -245,7 +203,6 @@ public class ButtonContainer extends JPanel implements ActionListener {
 			musicTime.setText(String.valueOf(currentChromagram.getMusicTime(index))+" s");
 			alledgedChord.setText(String.valueOf(currentChromagram.chordSerie[index]));				
 		}
-<<<<<<< HEAD
 		
 		else if(e.getSource() == choisirMusique){
 			int returnVal = choixMusique.showOpenDialog(this);
@@ -257,7 +214,5 @@ public class ButtonContainer extends JPanel implements ActionListener {
 	        }
 	        
 		}
-=======
->>>>>>> a86d86a99729cf547d7faf3628c0e52733ef4015
 	 }
 }
