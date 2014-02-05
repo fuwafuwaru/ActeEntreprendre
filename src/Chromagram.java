@@ -146,7 +146,7 @@ public class Chromagram implements Runnable {
 		int[] chunk = convertToInt(b);
 		if(stream.getFormat().getChannels() == 1){
 			double[] temp = resample(chunk);
-			asp.getEnvelope().clip(temp, 0, temp.length);
+			asp.getDrawingPanel().getEnvelope().clip(temp, 0, temp.length);
 			return temp;
 		}
 		else if(stream.getFormat().getChannels() == 2){

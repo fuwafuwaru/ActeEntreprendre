@@ -12,8 +12,10 @@ class DrawingPanel extends JPanel {
 	private boolean launched = false;
 	
 	DrawingPanel(Envelope env){
+		e = env;
 		this.setLayout(new BorderLayout());
-		this.setPreferredSize(new Dimension(5000, 400));
+		this.setPreferredSize(new Dimension(2000, 400));
+		repaint();
 		this.setVisible(true);
 	}
 	
@@ -31,6 +33,7 @@ class DrawingPanel extends JPanel {
 		
 		@Override
 	public void paint(Graphics g){
+		super.paintComponent(g);
 		int h = this.getHeight();
 		int w = this.getWidth();
 		EnvPoint point;
@@ -50,7 +53,7 @@ class DrawingPanel extends JPanel {
 			}
 		}
 		else{
-			for(int k = 0; k < 5000; k++){
+			for(int k = 0; k < this.getWidth(); k++){
 				g.fillRect(k, 100, 3, 3);
 			}
 		}

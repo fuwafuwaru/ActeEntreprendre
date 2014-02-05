@@ -31,6 +31,10 @@ public class BeatFinderManual {
 		son.dispose();
 	}
 	
+	public JFrame getFrame(){
+		return son;
+	}
+	
 	class frame extends JFrame{
 		frame(){
 			panel cont = new panel(this);
@@ -40,7 +44,6 @@ public class BeatFinderManual {
 		    this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		    this.setLocationRelativeTo(null);
 		    this.add(cont);
-		    this.setVisible(true);
 		}
 		
 	}

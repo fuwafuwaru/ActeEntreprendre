@@ -9,17 +9,17 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneLayout;
 
 
-public class AmplitudeScrollPane extends JScrollPane {
+public class AmplitudeScrollPane extends JPanel {
 	
 	private Envelope e;
 	private boolean launched = false;
 	private DrawingPanel drawingPanel;
 	
-	AmplitudeScrollPane(DrawingPanel dp){
-		this.setLayout(new ScrollPaneLayout());
-		this.setPreferredSize(new Dimension(1500, 400));
-		drawingPanel = dp;
-		this.add(drawingPanel);
+	AmplitudeScrollPane(){
+		this.setLayout(new BorderLayout());
+		drawingPanel = new DrawingPanel(new Envelope());
+		JScrollPane jsp = new JScrollPane(drawingPanel);
+		this.add(jsp, BorderLayout.CENTER);
 		this.setVisible(true);
 	}
 	
@@ -37,9 +37,12 @@ public class AmplitudeScrollPane extends JScrollPane {
 		drawingPanel.setLaunched();
 	}
 	
+	public DrawingPanel getDrawingPanel(){
+		return drawingPanel;
+	}
 	
 	public void paint(Graphics g){
-		super.paint(g);
 		drawingPanel.paint(g);
+		super.paintComponent(g);
 	}
 }

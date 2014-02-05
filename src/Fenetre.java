@@ -22,11 +22,16 @@ public class Fenetre extends JFrame{
 		 snd.setParentContainer(this);
 		 snd.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
 		 
-		 asp = new AmplitudeScrollPane(new DrawingPanel(new Envelope()));
-		 asp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		 Envelope env = new Envelope();
+		 DrawingPanel dp = new DrawingPanel(new Envelope());
+		 dp.setPreferredSize(new Dimension(2000, 400));
+		 System.out.println(dp.getWidth());
+		 asp = new AmplitudeScrollPane();
+		 //asp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		 
 		 
 		 ButtonContainer buttonContainer = new ButtonContainer();
-		 BeatFinderManual bfm = new BeatFinderManual(buttonContainer);
+		 //BeatFinderManual bfm = new BeatFinderManual(buttonContainer);
 		 buttonContainer.setParentContainer(this);
 		 buttonContainer.setAssociatedPanel(snd);
 		 
@@ -45,7 +50,9 @@ public class Fenetre extends JFrame{
 
 		 //this.setContentPane(inter);
 		 this.setContentPane(split2);
+		 this.pack();
 		 this.setVisible(true);
+		 //bfm.getFrame().setVisible(true);
 	 }
 	 
 	 

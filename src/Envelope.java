@@ -15,6 +15,9 @@ public class Envelope {
 	
 	Envelope(){
 		//currentGraph = new ArrayList<EnvPoint>();
+		for(int k = 0; k < currentGraph.length; k++){
+			currentGraph[k] = new EnvPoint(100);
+		}
 	}
 	
 	public void rescale(double minValue, double maxValue)
