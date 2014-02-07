@@ -14,7 +14,7 @@ class DrawingPanel extends JPanel {
 	DrawingPanel(Envelope env){
 		e = env;
 		this.setLayout(new BorderLayout());
-		this.setPreferredSize(new Dimension(2000, 400));
+		this.setPreferredSize(new Dimension(20000, 400));
 		repaint();
 		this.setVisible(true);
 	}
@@ -25,6 +25,7 @@ class DrawingPanel extends JPanel {
 	
 	public void setLaunched(){
 		launched = true;
+		repaint();
 	}
 	
 	public Envelope getEnvelope(){
@@ -43,10 +44,10 @@ class DrawingPanel extends JPanel {
 				point = e.currentGraph[k];
 				if(point != null){
 					if(point.getY() >= 0){							
-						g.fillRect(k, (int) (0.5*h- point.getY()/500), 1, (int) (point.getY()/500));
+						g.fillRect(k, (int) (0.5*h- point.getY()), 1, (int) (point.getY()));
 					}
 					else{
-						g.fillRect(k, (int) (0.5*h), 1, (int) (-point.getY()/500));
+						g.fillRect(k, (int) (0.5*h), 1, (int) (-point.getY()));
 					}
 				}
 					
