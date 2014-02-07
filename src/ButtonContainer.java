@@ -148,6 +148,7 @@ public class ButtonContainer extends JPanel implements ActionListener {
 			//Chromagram chr = new Chromagram("/home/anis/workspace/acteEntreprendre/sons/dresden.wav");
 			//Chromagram chr = new Chromagram("sons/dresden.wav");
 			if(cheminMusique != null){
+				index = 0;
 				System.out.println(cheminMusique);
 				Chromagram chr = new Chromagram(cheminMusique);
 				setCurrentChromagram(chr);
@@ -165,12 +166,12 @@ public class ButtonContainer extends JPanel implements ActionListener {
 				if(isLaunched){
 					musicTime.setText(String.valueOf(chr.getMusicTime(index)) + " s");
 					ChromaVector cv = currentChromagram.chromagram[index];
-					alledgedChord.setText(String.valueOf(cv.findMaxCorrelation()));	
+					//alledgedChord.setText(String.valueOf(cv.findMaxCorrelation()));	
 				}
 			}
 				
 			else{
-				new MusiqueDialog(this.getWidth()/2, this.getHeight()/2);
+				new MusiqueDialog(this.parentContainer.getWidth()/2, this.getHeight()/2);
 			}
 		 }
 		

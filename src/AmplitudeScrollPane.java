@@ -43,6 +43,6 @@ public class AmplitudeScrollPane extends JPanel {
 	
 	public void paint(Graphics g){
 		drawingPanel.paint(g);
-		super.paintComponent(g);
+		super.paint(g);
 	}
 }
