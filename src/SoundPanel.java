@@ -1,32 +1,36 @@
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JPanel;
-
+import javax.swing.JScrollPane;
 import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.Color;
 
 public class SoundPanel extends JPanel {
-	public Complex[] graph;
+	public double[] graph;
 	private Fenetre parentContainer;
+	//private PrintingPanel printingPanel;
 	
 	SoundPanel(){
-		
-		this.setLayout(new BorderLayout(10, 10));
+		//printingPanel = new PrintingPanel(this);
+		//this.setLayout(new BorderLayout(10, 10));
 		this.setBorder(BorderFactory.createTitledBorder("Spectrum"));
-		
-		Complex[] temp = new Complex[2000];
-		for(int k = 0; k<temp.length; k++){
-			temp[k]= new Complex(k);
+		this.setSize(getMaximumSize());
+		double[] temp = new double[1000];
+		for(int k = 0; k < temp.length; k++){
+			temp[k] = k;
 		}
-		setGraph(temp);
+		this.setGraph(temp);
 		this.setVisible(true);
 	}
 	
 
-	SoundPanel(Complex[] b){
+	SoundPanel(double[] b){
 		this.setBorder(BorderFactory.createTitledBorder("Spectrum"));
 		
 		setGraph(b);
+		this.setSize(getMaximumSize());
+
 		this.setVisible(true);
 	}
 	
@@ -35,20 +39,36 @@ public class SoundPanel extends JPanel {
 	}
 	
 	
-	public void setGraph(Complex[] b){
+	public void setGraph(double[] b){
 		graph = b;
 		repaint();
 	}
 	
+	/*public class PrintingPanel extends JPanel{
+		private SoundPanel sp;
+		
+		PrintingPanel(SoundPanel s){
+			sp = s;
+			this.setVisible(true);
+		}
+		
+		
+		public void paint(Graphics g){
+			
+		}
+	};*/
+	
 	public void paint(Graphics g){
+		super.paint(g);
 		try{
 			int h = this.getHeight();
 			int w = this.getWidth();
 			g.setColor(Color.WHITE);
 			g.fillRect(0, 0, w, h);
 			g.setColor(Color.BLACK);
-			for(int k=0; k<this.getWidth() && k < graph.length; k+=2){;
-				g.fillRect(k,h-((int) graph[k].abs())/100,2,((int) graph[k].abs()));
+			for(int k=0; k < graph.length; k++){;
+				g.setColor(new Color(35, 142, 200));
+				g.fillRect(5*k,h-((int) graph[k])/500, 2,((int) graph[k]));
 			}
 		}catch(NullPointerException e){
 			System.out.println("Attention NullPointerException");

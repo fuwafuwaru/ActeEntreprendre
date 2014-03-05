@@ -41,6 +41,10 @@ public class AmplitudeScrollPane extends JPanel {
 		return drawingPanel;
 	}
 	
+	public void initEnvelope(){
+		e = new Envelope();
+	}
+	
 	public void paint(Graphics g){
 		drawingPanel.paint(g);
 		super.paint(g);

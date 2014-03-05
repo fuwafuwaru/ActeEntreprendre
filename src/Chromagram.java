@@ -11,7 +11,7 @@ public class Chromagram implements Runnable {
 	public ChromaVector[] chromagram;
 	public Chord[] chordSerie;
 	private static final int FFT_SIZE = 1024;
-	public Complex[][] spectrum; 
+	public double[][] spectrum; 
 	private File sound;
 	private AudioInputStream stream;
 	private String name;
@@ -25,7 +25,7 @@ public class Chromagram implements Runnable {
 	private byte[] buffer;
 	private int byteToBeRead;
 	private JProgressBar bar;
-	private float overlay = 0.5f;
+	private float overlay = 1.0f;
 	private AmplitudeScrollPane asp;
 	//private AmplitudeScrollPane aspTmp;
 
@@ -63,12 +63,7 @@ public class Chromagram implements Runnable {
 	private void init(){
 		chromagram = new ChromaVector[numberOfData];
 		chordSerie = new Chord[numberOfData];
-		spectrum = new Complex[numberOfData][FFT_SIZE];
-		for(int k = 0; k<spectrum.length;k++){
-			for(int i = 0; i < FFT_SIZE; i++){
-				spectrum[k][i] = new Complex(0,0);
-			}
-		}
+		spectrum = new double[numberOfData][FFT_SIZE];
 	}
 	
 	public void setFile(){
@@ -203,7 +198,7 @@ public class Chromagram implements Runnable {
 		}
 		
 		while(stream.read(buffer) != -1 && k < numberOfData){
-			bar.setValue(k);
+			bar.setValue(k); //Mise à jour de la barre de chargement
 			if(notStarted){
 				int j = 0;
 				double tmp = 0.;
@@ -216,7 +211,7 @@ public class Chromagram implements Runnable {
 					notStarted = false;
 				}
 			}
-			spectrum[k] = ProcessingTools.fft(convertToComplex(ProcessingTools.blackmanWindow(preProcess(buffer), newSampling, FFT_SIZE)));
+			spectrum[k] = ProcessingTools.onlyHalf(ProcessingTools.fft(convertToComplex(ProcessingTools.blackmanWindow(preProcess(buffer), newSampling, FFT_SIZE))));
 			double[] array2 = setInMidiScale(spectrum[k]);			
 			ChromaVector chrv = new ChromaVector(array2);
 			chrv.normalise();		
@@ -273,7 +268,7 @@ public class Chromagram implements Runnable {
 	
 	
 	
-	public double[] setInMidiScale(Complex[] comp){
+	public double[] setInMidiScale(double[] comp){
 		double inverseRatio = (FFT_SIZE/newSampling);
 		double ratio = 1/inverseRatio;
 		//int kstart =  (int) (Math.round((inverseRatio*440*Math.pow(2, (MIDIMIN-69)/12.))));
@@ -286,17 +281,17 @@ public class Chromagram implements Runnable {
 				i = (int) Math.round((Pitch.convertFreq(j)/ratio));
 				l =  (int) Math.round((Pitch.convertFreq(j+1)/ratio));
 				if(i != l){
-					array[j-MIDIMIN]=0.5*(comp[i].abs()+comp[i-1].abs());
-					array[j+1-MIDIMIN]=0.5*(comp[i].abs()+comp[i+1].abs());
+					array[j-MIDIMIN]=0.5*(comp[i]+comp[i-1]);
+					array[j+1-MIDIMIN]=0.5*(comp[i]+comp[i+1]);
 					j++;
 				}
 				else{
 					System.out.println("Les notes "+ j + " et " + (j+1) +" sont indissociables");
-					array[j-MIDIMIN]=comp[i].abs();
+					array[j-MIDIMIN]=comp[i];
 				}
 			}
 			else{
-				array[j-MIDIMIN]=comp[i].abs();
+				array[j-MIDIMIN]=comp[i];
 			}
 		}		
 		return array;

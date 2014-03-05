@@ -28,17 +28,18 @@ public class ButtonContainer extends JPanel implements ActionListener {
 	private JLabel tempoLab;
 	private JLabel measureLab;
 	private JLabel timeInMeasureLab;
-	private JFileChooser choixMusique = new JFileChooser("/home/Anis/workspace/ActeEntreprendre/sons/");
+	private JFileChooser choixMusique = new JFileChooser("/home/anis/workspace/acteEntreprendre/sons/");
 	private JButton choisirMusique;
+	private JButton getTempo;
 	private JLabel nomMusique;
 	private File file;
 	private String cheminMusique;
+	private InfoContainer ic;
 	
-	
-	public ButtonContainer(){		
+	public ButtonContainer(){	
 		this.setSize(280, 600);
 		this.setLayout(new BorderLayout(10, 10));
-		this.setLayout(new GridLayout(11, 1, 5, 5));
+		this.setLayout(new GridLayout(6, 1, 5, 5));
 		this.setBorder(BorderFactory.createTitledBorder("ToolBox"));
 		
 		choisirMusique = new JButton("Sélectionner la musique");
@@ -51,6 +52,11 @@ public class ButtonContainer extends JPanel implements ActionListener {
 		launchBorder.setTitleFont(launchBorder.getTitleFont().deriveFont(Font.BOLD ));
 		launch.setBorder(launchBorder);
 		
+		getTempo = new JButton("Get Tempo !");
+		TitledBorder tempoBorder = BorderFactory.createTitledBorder("Tempo");
+		tempoBorder.setTitleFont(tempoBorder.getTitleFont().deriveFont(Font.BOLD ));
+		getTempo.setBorder(tempoBorder);
+		
 		more = new JButton(">>");
 		TitledBorder moreBorder = BorderFactory.createTitledBorder("More");
 		moreBorder.setTitleFont(moreBorder.getTitleFont().deriveFont(Font.BOLD ));
@@ -61,7 +67,7 @@ public class ButtonContainer extends JPanel implements ActionListener {
 		lessBorder.setTitleFont(lessBorder.getTitleFont().deriveFont(Font.BOLD ));
 		//less.setBorder(lessBorder);
 
-		musicTime = new JLabel("0");
+		/*musicTime = new JLabel("0");
 		TitledBorder timeBorder = BorderFactory.createTitledBorder("Time");
 		timeBorder.setTitleFont(timeBorder.getTitleFont().deriveFont(Font.BOLD ));
 		musicTime.setBorder(timeBorder);
@@ -77,9 +83,9 @@ public class ButtonContainer extends JPanel implements ActionListener {
 		nthSpectrum.setBorder(spectrumBorder);
 		
 	    tempoLab = new JLabel("0");
-	    TitledBorder tempoBorder = BorderFactory.createTitledBorder("Tempo");
-	    tempoBorder.setTitleFont(tempoBorder.getTitleFont().deriveFont(Font.BOLD ));
-		tempoLab.setBorder(tempoBorder);
+	    TitledBorder tempoFinderBorder = BorderFactory.createTitledBorder("Tempo");
+	    tempoFinderBorder.setTitleFont(tempoFinderBorder.getTitleFont().deriveFont(Font.BOLD ));
+		tempoLab.setBorder(tempoFinderBorder);
 		
 	    measureLab = new JLabel("0");
 	    TitledBorder measureBorder = BorderFactory.createTitledBorder("Measure");
@@ -89,11 +95,12 @@ public class ButtonContainer extends JPanel implements ActionListener {
 	    timeInMeasureLab = new JLabel("0");
 	    TitledBorder nthTimeBorder = BorderFactory.createTitledBorder("Time in measure");
 	    nthTimeBorder.setTitleFont(nthTimeBorder.getTitleFont().deriveFont(Font.BOLD ));
-		timeInMeasureLab.setBorder(nthTimeBorder);
+		timeInMeasureLab.setBorder(nthTimeBorder);*/
 	    
 	    nomMusique = new JLabel("Pas de musique encore sélectionnée");
 		
 	    choisirMusique.addActionListener(this);
+	    getTempo.addActionListener(this);
 	    launch.addActionListener(this);
 	    more.addActionListener(this);
 	    less.addActionListener(this);
@@ -101,14 +108,15 @@ public class ButtonContainer extends JPanel implements ActionListener {
 	    this.add(choisirMusique);
 	    this.add(nomMusique);
 	    this.add(launch);
+	    this.add(getTempo);
 	    this.add(more);
 	    this.add(less);
-	    this.add(nthSpectrum);
+	    /*this.add(nthSpectrum);
 	    this.add(musicTime);
 	    this.add(alledgedChord);
 	    this.add(tempoLab);
 	    this.add(measureLab);
-	    this.add(timeInMeasureLab);
+	    this.add(timeInMeasureLab);*/
 	    this.setVisible(true);
 	    this.setSize(90, 50);
 	}
@@ -117,6 +125,10 @@ public class ButtonContainer extends JPanel implements ActionListener {
 		tempo = t;
 	}
 	
+	
+	public void setInfoContainer(InfoContainer inf){
+		ic = inf;
+	}
 	
 	public void setAssociatedPanel(SoundPanel sp){
 		associatedPanel = sp;
@@ -148,13 +160,14 @@ public class ButtonContainer extends JPanel implements ActionListener {
 			//Chromagram chr = new Chromagram("/home/anis/workspace/acteEntreprendre/sons/dresden.wav");
 			//Chromagram chr = new Chromagram("sons/dresden.wav");
 			if(cheminMusique != null){
-				index = 0;
+				ic.index = 0;
 				System.out.println(cheminMusique);
 				Chromagram chr = new Chromagram(cheminMusique);
 				setCurrentChromagram(chr);
 				chr.setPanel(parentContainer.getSoundPanel());
 				chr.setAmplitudeScrollPane(parentContainer.getAmplitudeScrollPane());
-				tempoLab.setText(String.valueOf(tempo));
+				parentContainer.getAmplitudeScrollPane().initEnvelope();
+				ic.tempoLab.setText(String.valueOf(ic.tempo));
 				Thread thread = new Thread(chr);
 				Progress prog = new Progress(thread, chr, this);
 				try {
@@ -164,8 +177,8 @@ public class ButtonContainer extends JPanel implements ActionListener {
 					e1.printStackTrace();
 				}
 				if(isLaunched){
-					musicTime.setText(String.valueOf(chr.getMusicTime(index)) + " s");
-					ChromaVector cv = currentChromagram.chromagram[index];
+					ic.musicTime.setText(String.valueOf(chr.getMusicTime(ic.index)) + " s");
+					ChromaVector cv = currentChromagram.chromagram[ic.index];
 					//alledgedChord.setText(String.valueOf(cv.findMaxCorrelation()));	
 				}
 			}
@@ -177,32 +190,34 @@ public class ButtonContainer extends JPanel implements ActionListener {
 		
 		//Attention la localisation en mesure ne marche que pour du 4/4
 		else if(e.getSource() == more){
-			index++;
-			float time = currentChromagram.getMusicTime(index);
+			ic.index++;
+			float time = currentChromagram.getMusicTime(ic.index);
 			int timeCount = (int) (time*60/tempo);
-			measure = (int) timeCount/4;
-			timeInMeasure = timeCount%4 + 1;
-			measureLab.setText(String.valueOf(measure));
-			timeInMeasureLab.setText(String.valueOf(timeInMeasure));
-			nthSpectrum.setText(String.valueOf(index));
-			associatedPanel.setGraph(currentChromagram.spectrum[index]);
-			musicTime.setText(String.valueOf(time) + " s");
-			alledgedChord.setText(String.valueOf(currentChromagram.chordSerie[index]));				
+			ic.measure = (int) timeCount/4;
+			ic.timeInMeasure = timeCount%4 + 1;
+			ic.measureLab.setText(String.valueOf(ic.measure));
+			ic.timeInMeasureLab.setText(String.valueOf(ic.timeInMeasure));
+			ic.nthSpectrum.setText(String.valueOf(ic.index));
+			associatedPanel.setGraph(currentChromagram.spectrum[ic.index]);
+			ic.musicTime.setText(String.valueOf(time) + " s");
+			ic.alledgedChord.setText(String.valueOf(currentChromagram.chordSerie[ic.index]));				
 		}
 		
 		
 		else if(e.getSource() == less){
-			index--;
-			float time = currentChromagram.getMusicTime(index);
+			if(ic.index != 0){
+				ic.index--;
+			}
+			float time = currentChromagram.getMusicTime(ic.index);
 			int timeCount = (int) (time*60/tempo);
-			measure = (int) timeCount/4;
-			timeInMeasure = timeCount%4;
-			measureLab.setText(String.valueOf(measure));
-			timeInMeasureLab.setText(String.valueOf(timeInMeasure));
-			nthSpectrum.setText(String.valueOf(index));
-			associatedPanel.setGraph(currentChromagram.spectrum[index]);
-			musicTime.setText(String.valueOf(currentChromagram.getMusicTime(index))+" s");
-			alledgedChord.setText(String.valueOf(currentChromagram.chordSerie[index]));				
+			ic.measure = (int) timeCount/4;
+			ic.timeInMeasure = timeCount%4;
+			ic.measureLab.setText(String.valueOf(ic.measure));
+			ic.timeInMeasureLab.setText(String.valueOf(ic.timeInMeasure));
+			ic.nthSpectrum.setText(String.valueOf(ic.index));
+			associatedPanel.setGraph(currentChromagram.spectrum[ic.index]);
+			ic.musicTime.setText(String.valueOf(currentChromagram.getMusicTime(ic.index))+" s");
+			ic.alledgedChord.setText(String.valueOf(currentChromagram.chordSerie[ic.index]));				
 		}
 		
 		else if(e.getSource() == choisirMusique){
@@ -214,6 +229,10 @@ public class ButtonContainer extends JPanel implements ActionListener {
 	        } else {
 	        }
 	        
+		}
+		
+		else if(e.getSource() == getTempo){
+			parentContainer.printBeatFinder();
 		}
 	 }
 }

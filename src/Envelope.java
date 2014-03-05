@@ -43,7 +43,9 @@ public class Envelope {
 	}
 	
 	
-	
+	public EnvPoint[] getCurrentGraph(){
+		return currentGraph;
+	}
 	
 	public double ClampValue(double value){ 
 		return Math.max(mMinValue, Math.min(mMaxValue, value)); 

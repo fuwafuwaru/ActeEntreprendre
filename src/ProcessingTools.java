@@ -32,4 +32,19 @@ public class ProcessingTools {
         }
         return y;
 	}
+	
+	
+	/*
+	 * We only take the first half of the complex array output of the fft for we're only interested in the real part of
+	 * Fourier's coefficients.
+	 */
+	
+	public static double[] onlyHalf(Complex[] arr){
+		double[] array = new double[arr.length/2];
+		for(int k = 0; k < arr.length/2; k++){
+			array[k] = arr[k].abs();
+		}
+		return array;
+	}
+	
 }
