@@ -10,7 +10,7 @@ public class Chromagram implements Runnable {
 	private int numberOfData = 1000;
 	public ChromaVector[] chromagram;
 	public Chord[] chordSerie;
-	private static final int FFT_SIZE = 1024;
+	private static final int FFT_SIZE = 2048;
 	public double[][] spectrum; 
 	private File sound;
 	private AudioInputStream stream;
@@ -207,7 +207,7 @@ public class Chromagram implements Runnable {
 					tmp += j;
 					}
 				tmp = tmp / buffer.length;
-				if(tmp >= 150){
+				if(tmp >= 50){
 					notStarted = false;
 				}
 			}
@@ -221,7 +221,7 @@ public class Chromagram implements Runnable {
 			}
 			else{
 				if(k > 0 && chordSerie[k-1] != null){
-					chordSerie[k] = chrv.findMaxWeightedCorrelation(chordSerie[k-1]);
+					chordSerie[k] = chrv.findMaxCorrelation();
 				}
 				else{
 					chordSerie[k] = chrv.findMaxCorrelation();

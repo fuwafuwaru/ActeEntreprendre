@@ -12,7 +12,8 @@ import javax.swing.ScrollPaneLayout;
 class DrawingPanel extends JPanel implements MouseListener {
 	private Envelope e;
 	private boolean launched = false;
-	private double coefficient = 0.05;
+	private double coefficientY = 0.05;
+	private int coefficientX = 2;
 
 	
 	DrawingPanel(Envelope env){
@@ -34,12 +35,14 @@ class DrawingPanel extends JPanel implements MouseListener {
 	}
 	
 	public void raiseCoefficient(){
-		coefficient += 0.001;
+		coefficientY += 0.001;
+		coefficientX++;
 		repaint();
 	}
 	
 	public void lowerCoefficient(){
-		coefficient -= 0.001;
+		coefficientY -= 0.001;
+		coefficientX--;
 		repaint();
 	}
 	
@@ -60,8 +63,8 @@ class DrawingPanel extends JPanel implements MouseListener {
 			for(int k = 0; k < e.currentGraph.length; k++){
 				point = e.currentGraph[k];
 				if(point != null){						
-					g.fillRect(k, (int) (0.5*h- Math.abs(point.getY())*coefficient), 1, (int) (Math.abs(point.getY())*coefficient) + 1);
-					g.fillRect(k, (int) (0.5*h)-1, 1, (int) (Math.abs(point.getY())*coefficient));
+					g.fillRect(k*coefficientX, (int) (0.5*h- Math.abs(point.getY())*coefficientY), 1, (int) (Math.abs(point.getY())*coefficientY) + 1);
+					g.fillRect(k*coefficientX, (int) (0.5*h)-1, 1, (int) (Math.abs(point.getY())*coefficientY));
 				}
 					
 			}

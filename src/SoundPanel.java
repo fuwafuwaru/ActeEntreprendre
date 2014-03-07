@@ -68,7 +68,14 @@ public class SoundPanel extends JPanel {
 			g.setColor(Color.BLACK);
 			for(int k=0; k < graph.length; k++){;
 				g.setColor(new Color(35, 142, 200));
-				g.fillRect(5*k,h-((int) graph[k])/500, 2,((int) graph[k]));
+				g.fillRect(5*(k-46),h-((int) graph[k])/200, 2,((int) graph[k]));
+			}
+			g.setColor(Color.black);
+			for(int i = 53; i < 105; i++){
+				double x = Pitch.convertFreq(i);
+				int u =  (int) (x/5.38); //2048/11025
+				g.fillRect(5*(u-46), 100, 1, h-100);
+				g.drawString((new Pitch(i)).getChroma().toString(), 5*(u-46), 70);
 			}
 		}catch(NullPointerException e){
 			System.out.println("Attention NullPointerException");

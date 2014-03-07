@@ -27,5 +27,6 @@ public enum Chord {
 	public Chroma getFifth(){return fifth;}
 	
 	public static void main(String[] args){
+		System.out.println(Dm.getThird());
 	}
 }
