@@ -18,7 +18,7 @@ public class Progress extends JFrame{
 		bar.setMaximum(500);
 		bar.setMinimum(0);
 		bar.setStringPainted(true);
-		chr.setBar(bar);
+		chr.setProgressBar(this);
 		this.getContentPane().add(bar, BorderLayout.CENTER);
 		launch = new JButton("Lancer");
 		launch.addActionListener(new ActionListener(){

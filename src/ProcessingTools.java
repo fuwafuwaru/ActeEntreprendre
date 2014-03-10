@@ -47,4 +47,52 @@ public class ProcessingTools {
 		return array;
 	}
 	
+	
+	public static double getMax(double[] array){
+		double max = 0;
+		for(double x : array){
+			if(x > max){
+				max = x;
+			}
+		}
+		return max;
+	}
+	
+	public static int[] findLocalMax(double[] array){
+		int[] output = new int[10];   //Il faut créer variable globale donnant le max de notes qu'on s'impose pour une frame
+		double dif = 0;
+		int k = 0;
+		int i = 0;
+		double max = getMax(array);
+		while(k < array.length - 2){ 
+			dif = (array[k+1]-array[k])/array[k];
+			if(dif >= 2.0 && (max/array[k+1] <= 10 | max/array[k+2] <= 10)){ 
+				double dif2 = 0.;
+				int j = 0;
+				while(j <= 4){ //On cherche le pic au plus tard quatre cases plus loin
+					k++;
+					if(k+1 >= array.length){
+						break;
+					}
+					else{
+						dif2 = (array[k+1]-array[k])/array[k];
+						if(dif2 <= 0 && max/array[k] <= 10){ //La deuxième condition sert à ne pas marquer comme pic des amplitudes infimes
+							if(i < output.length){
+								output[i] = k;
+								i++;
+								j=5; //On sort de la boucle on a plus de maximum à chercher.
+							}
+						}
+					}
+					j++;
+				}
+				k++;
+			}
+			else{
+				k++;
+			}
+		}
+		return output;
+	}
+	
 }

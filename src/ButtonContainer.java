@@ -144,21 +144,6 @@ public class ButtonContainer extends JPanel implements ActionListener {
 	
 	public void actionPerformed(ActionEvent e){
 		if(e.getSource() == launch){
-			/*isLaunched = true;
-			Chromagram chr = new Chromagram("/home/anis/workspace/acteEntreprendre/sons/dresden.wav");
-			setCurrentChromagram(chr);
-			chr.setPanel(parentContainer.getSoundPanel());
-			tempoLab.setText(String.valueOf(tempo));
-			try{
-				chr.process();
-				musicTime.setText(String.valueOf(chr.getMusicTime(index)) + " s");
-				ChromaVector cv = currentChromagram.chromagram[index];
-				alledgedChord.setText(String.valueOf(cv.findMaxCorrelation()));
-			 }catch(IOException err){
-			 }*/
-			
-			//Chromagram chr = new Chromagram("/home/anis/workspace/acteEntreprendre/sons/dresden.wav");
-			//Chromagram chr = new Chromagram("sons/dresden.wav");
 			if(cheminMusique != null){
 				ic.index = 0;
 				System.out.println(cheminMusique);

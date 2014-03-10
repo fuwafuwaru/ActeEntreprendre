@@ -6,34 +6,40 @@ import javax.swing.JFrame;
 import java.io.*;
 
 
-public class Chromagram implements Runnable {
+/*
+ * TODO : Travailler l'actualisation de numberOfData en fontion de la taille de la musique chargée.
+ */
+
+public class Chromagram implements Runnable, Serializable {
 	private int numberOfData = 1000;
 	public ChromaVector[] chromagram;
 	public Chord[] chordSerie;
 	private static final int FFT_SIZE = 2048;
 	public double[][] spectrum; 
-	private File sound;
-	private AudioInputStream stream;
+	transient private File sound;
+	transient private AudioInputStream stream;
 	private String name;
-	private SoundPanel snd;
+	private String path;
+	transient private SoundPanel snd;
 	private float sampling = 44100;
 	private int resamplingRate = 4;
 	private float newSampling = sampling/resamplingRate;
 	private final int MIDIMIN = 43;
 	private final int MIDIMAX = 105;
-	private int limitation = 1;
-	private byte[] buffer;
+	transient private int limitation = 1;
+	transient private byte[] buffer;
 	private int byteToBeRead;
-	private JProgressBar bar;
+	transient private Progress progBar;
+	transient private JProgressBar bar;
 	private float overlay = 1.0f;
-	private AmplitudeScrollPane asp;
+	transient private AmplitudeScrollPane asp;
 	//private AmplitudeScrollPane aspTmp;
 
 	Chromagram(){
 	}
 	
 	Chromagram(String s){
-		setName(s);
+		setPath(s);
 		this.setFile();
 		this.setStream();
 		sampling = stream.getFormat().getSampleRate();
@@ -42,7 +48,7 @@ public class Chromagram implements Runnable {
 	}
 	
 	Chromagram(String s, SoundPanel sp){
-		setName(s);
+		setPath(s);
 		this.setFile();
 		this.setStream();
 		sampling = stream.getFormat().getSampleRate();
@@ -56,8 +62,12 @@ public class Chromagram implements Runnable {
 		System.out.println("SoundPanel set");
 	}
 	
+	public void setPath(String s){
+		path = s;
+	}
+	
 	public void setName(String s){
-		name = s;
+		name = s.substring(0, s.length() - 4);
 	}
 	
 	private void init(){
@@ -67,7 +77,8 @@ public class Chromagram implements Runnable {
 	}
 	
 	public void setFile(){
-		sound = new File(name);
+		sound = new File(path);
+		setName(sound.getName());
 		System.out.println("File set");
 	}
 	
@@ -84,8 +95,9 @@ public class Chromagram implements Runnable {
 		System.out.println("Stream set");
 	}
 	
-	public void setBar(JProgressBar prog){
-		bar = prog;
+	public void setProgressBar(Progress prog){
+		progBar = prog;
+		bar = prog.getBar();
 	}
 	
 	public void setPanel(SoundPanel sp){
@@ -100,13 +112,25 @@ public class Chromagram implements Runnable {
 		return limitation;
 	}
 	
+	public String getpath(){
+		return path;
+	}
 	
+	public String getRootPath(String s){
+		int lastSlash = 0;
+		for(int k = 0; k<s.length(); k++){
+			if(s.charAt(k) == '/'){
+				lastSlash = k;
+			}
+		}
+		return s.substring(0, lastSlash+1);
+	}
 	
 	public void process() throws IOException{
 		System.out.println("Signal processing now taking place ...");
 		//setFile();
 		//setStream();
-		bar.setMaximum(numberOfData-1);
+		progBar.getBar().setMaximum(numberOfData-1);
 		int frameSize = stream.getFormat().getFrameSize();
 		//We multiply by the resampling rate the buffer size in order to get an array of the desired size for the
 		//fft after resampling
@@ -301,7 +325,7 @@ public class Chromagram implements Runnable {
 	
 	public static void main (String[] args){
 		try { 
-		    //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		    //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClasspath());
 			UIManager.setLookAndFeel("com.jtattoo.plaf.graphite.GraphiteLookAndFeel");
 		} catch (Exception err) {
 		    err.printStackTrace();
@@ -310,11 +334,31 @@ public class Chromagram implements Runnable {
 	}
 
 	
+	public void sauvegarde(){
+		try
+	      {
+			System.out.println(getRootPath(this.getpath()));
+	        FileOutputStream fileOut =
+	        new FileOutputStream(getRootPath(this.getpath()) + name + ".ser");
+	        ObjectOutputStream out = new ObjectOutputStream(fileOut);
+	        out.writeObject(this);
+	        out.close();
+	        fileOut.close();
+	        System.out.println("Serialized data is saved in " + getRootPath(this.getpath()) + name + ".ser");
+	      }catch(IOException i)
+	      {
+	          System.out.println(i);
+	          System.out.println("Problème lors de la sauvegarde du Chromagram");
+	      }
+	}
+	
 	@Override
 	public void run() {
 		try {
 			process();
-			bar.getParent().removeAll();
+			System.out.println("Calcul du chromagram effectué avec succès");
+			this.sauvegarde();
+			bar.getParent().setVisible(false);
 			asp.setLaunched();
 			asp.getParent().repaint();
 		} catch (IOException e) {

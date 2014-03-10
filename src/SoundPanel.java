@@ -5,10 +5,14 @@ import javax.swing.JScrollPane;
 import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.Color;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
-public class SoundPanel extends JPanel {
+public class SoundPanel extends JPanel implements MouseListener {
 	public double[] graph;
 	private Fenetre parentContainer;
+	private int[] localMaximums;
+	private double coefficient = 0.05;
 	//private PrintingPanel printingPanel;
 	
 	SoundPanel(){
@@ -21,6 +25,7 @@ public class SoundPanel extends JPanel {
 			temp[k] = k;
 		}
 		this.setGraph(temp);
+		this.addMouseListener(this);
 		this.setVisible(true);
 	}
 	
@@ -41,6 +46,17 @@ public class SoundPanel extends JPanel {
 	
 	public void setGraph(double[] b){
 		graph = b;
+		localMaximums = ProcessingTools.findLocalMax(graph);
+		repaint();
+	}
+	
+	public void raiseCoefficient(){
+		coefficient += 0.01;
+		repaint();
+	}
+	
+	public void lowerCoefficient(){
+		coefficient -= 0.01;
 		repaint();
 	}
 	
@@ -66,9 +82,13 @@ public class SoundPanel extends JPanel {
 			g.setColor(Color.WHITE);
 			g.fillRect(0, 0, w, h);
 			g.setColor(Color.BLACK);
-			for(int k=0; k < graph.length; k++){;
+			for(int k=0; k < graph.length; k++){
 				g.setColor(new Color(35, 142, 200));
-				g.fillRect(5*(k-46),h-((int) graph[k])/200, 2,((int) graph[k]));
+				g.fillRect(5*(k-46),h-((int) (graph[k]*coefficient)), 2,((int) (graph[k]*coefficient)));
+			}
+			for(int k : localMaximums){//On colorie en rouge les maximums
+				g.setColor(Color.red);
+				g.fillRect(5*(k-46),h-((int) (graph[k]*coefficient)), 2,((int) (graph[k]*coefficient)));
 			}
 			g.setColor(Color.black);
 			for(int i = 53; i < 105; i++){
@@ -80,5 +100,51 @@ public class SoundPanel extends JPanel {
 		}catch(NullPointerException e){
 			System.out.println("Attention NullPointerException");
 		}
+	}
+
+
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+		System.out.println("mouse clicked");
+		if(arg0.getButton() == MouseEvent.BUTTON1){//Zoom
+			raiseCoefficient();
+			System.out.println("zoom");
+		}
+		
+		else if(arg0.getButton() == MouseEvent.BUTTON3){//DeZoom
+			lowerCoefficient();
+			System.out.println("dezoom");
+
+		}
+	}
+
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 }

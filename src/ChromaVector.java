@@ -1,5 +1,7 @@
+import java.io.Serializable;
 
-public class ChromaVector {
+
+public class ChromaVector implements Serializable {
 	public double[] chromaVector = new double[12]; 
 	ChromaVector(){
 	}
