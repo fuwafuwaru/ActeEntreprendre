@@ -12,8 +12,10 @@ import javax.swing.ScrollPaneLayout;
 public class AmplitudeScrollPane extends JPanel {
 	
 	private Envelope e;
+	private boolean loaded = false;
 	private boolean launched = false;
 	private DrawingPanel drawingPanel;
+	private SharedResources sharedResources;
 	
 	AmplitudeScrollPane(){
 		this.setLayout(new BorderLayout());
@@ -32,10 +34,20 @@ public class AmplitudeScrollPane extends JPanel {
 		return drawingPanel.getEnvelope();
 	}
 	
+	public void setLoaded(){
+		loaded = true;
+		drawingPanel.setLoaded();
+	}
+	
+	public void setSharedResources(SharedResources sh){
+		sharedResources = sh;
+	}
+	
 	public void setLaunched(){
 		launched = true;
 		drawingPanel.setLaunched();
 	}
+	
 	
 	public DrawingPanel getDrawingPanel(){
 		return drawingPanel;

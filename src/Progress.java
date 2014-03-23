@@ -7,6 +7,8 @@ public class Progress extends JFrame{
 	private JProgressBar bar;
 	private JButton launch;
 	private ButtonContainer bc;
+	
+	
 	public Progress(Thread thread, Chromagram chr, ButtonContainer butcon){
 		this.setSize(300, 80);
 		this.setTitle("*** Génération du chromagram ***");
@@ -38,6 +40,6 @@ public class Progress extends JFrame{
 	
 	public void end(){
 		System.out.println("fermeture de la fenêtre de chargement");
-		this.dispose();
+		this.setVisible(false);
 	}
 }

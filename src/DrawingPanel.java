@@ -11,15 +11,21 @@ import javax.swing.ScrollPaneLayout;
 
 class DrawingPanel extends JPanel implements MouseListener {
 	private Envelope e;
-	private boolean launched = false;
+	private boolean loaded = false;
 	private double coefficientY = 0.05;
 	private int coefficientX = 2;
+	private int cursor = 0;
+	private boolean launched = false;
+	private SharedResources sharedResources;
+	private double dedicatedLength;
+	private double reductionFactor = 100;
 
 	
 	DrawingPanel(Envelope env){
 		e = env;
+		dedicatedLength = env.getCurrentGraph().length/reductionFactor;
 		this.setLayout(new BorderLayout());
-		this.setPreferredSize(new Dimension(env.getCurrentGraph().length, 400));
+		this.setPreferredSize(new Dimension((int) dedicatedLength, 200));
 		repaint();
 		this.addMouseListener(this);
 		this.setVisible(true);
@@ -29,9 +35,15 @@ class DrawingPanel extends JPanel implements MouseListener {
 		e = env;
 	}
 	
+	public void setLoaded(){
+		loaded = true;
+		System.out.println("Le dessin d'amplitude a été chargé");
+		repaint();
+	}
+	
 	public void setLaunched(){
 		launched = true;
-		repaint();
+		System.out.println("Launched is set");
 	}
 	
 	public void raiseCoefficient(){
@@ -51,23 +63,53 @@ class DrawingPanel extends JPanel implements MouseListener {
 	}
 		
 	
+	public void setCursor(double x){
+		cursor = (int) (x*dedicatedLength);
+		this.paintImmediately(cursor, 0, 4, this.getHeight());
+		//System.out.println(cursor);
+		repaint();
+	}
+	
+	
+
+	public void setSharedResources(SharedResources sh){
+		sharedResources = sh;
+	}
 	
 		@Override
 	public void paint(Graphics g){
+		//System.out.println("Appel à la fonction repaint");
 		super.paintComponent(g);
 		int h = this.getHeight();
 		int w = this.getWidth();
 		EnvPoint point;
 		g.setColor(Color.BLUE);
-		if(launched){				
-			for(int k = 0; k < e.currentGraph.length; k++){
-				point = e.currentGraph[k];
-				if(point != null){						
-					g.fillRect(k*coefficientX, (int) (0.5*h- Math.abs(point.getY())*coefficientY), 1, (int) (Math.abs(point.getY())*coefficientY) + 1);
-					g.fillRect(k*coefficientX, (int) (0.5*h)-1, 1, (int) (Math.abs(point.getY())*coefficientY));
-				}
+		if(loaded){			
+			if(launched == false){
+				/*for(int k = 0; k < e.currentGraph.length; k++){
+					point = e.currentGraph[k];
+					if(point != null){						
+						g.fillRect(k*coefficientX, (int) (0.5*h- Math.abs(point.getY())*coefficientY), 1, (int) (Math.abs(point.getY())*coefficientY) + 1);
+						g.fillRect(k*coefficientX, (int) (0.5*h)-1, 1, (int) (Math.abs(point.getY())*coefficientY));
+					}
 					
+				}*/
+				
+				for(int k = 0; k < e.currentGraph.length; k += reductionFactor){
+					point = e.currentGraph[k];
+					if(point != null){						
+						g.fillRect((int) (k/reductionFactor), (int) (0.5*h- Math.abs(point.getY())*coefficientY), 1, (int) (Math.abs(point.getY())*coefficientY) + 1);
+						g.fillRect((int) (k/reductionFactor), (int) (0.5*h)-1, 1, (int) (Math.abs(point.getY())*coefficientY));
+					}
+					
+				}	
 			}
+			
+			else{
+				System.out.println("On est dans la deuxième condition du loaded");
+				g.fillRect(cursor, 0, 3, h);
+			}
+			
 		}
 		else{
 			for(int k = 0; k < this.getWidth(); k++){

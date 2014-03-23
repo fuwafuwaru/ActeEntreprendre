@@ -38,4 +38,62 @@ public class Pitch {
 		int i = v.getMaxIndex();
 		return (new Pitch(i));
 	}
+	
+	public String toString(){
+		int height = midi/12;
+		String out = "";
+		
+		if(chroma == Chroma.C){
+			out =  "c";
+		}
+		else if(chroma == Chroma.Cd){
+			out =  "cis";
+		}
+		else if(chroma == Chroma.D){
+			out = "d";
+		}
+		else if(chroma == Chroma.Dd){
+			out = "dis";
+		}
+		else if(chroma == Chroma.E){
+			out = "e";
+		}
+		else if(chroma == Chroma.F){
+			out = "f";
+		}
+		else if(chroma == Chroma.Fd){
+			out = "fis";
+		}
+		else if(chroma == Chroma.G){
+			out =  "g";
+		}
+		else if(chroma == Chroma.Gd){
+			out = "gis";
+		}
+		else if(chroma == Chroma.A){
+			out = "a";
+		}
+		else if(chroma == Chroma.Ad){
+			out = "ais";
+		}
+		else if(chroma == Chroma.B){
+			out = "b";
+		}
+		else return "";
+		
+		if(height < 5){
+			for(int i = 0; i < 5 - height; i++){
+				out = out + ",";
+			}
+		}
+		
+		if(height > 5){
+			for(int i = 0; i < height - 5; i++){
+				out = out + "'";
+			}
+		}
+		
+		return (out+" ");
+	}
+	
 }

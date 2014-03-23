@@ -4,6 +4,7 @@ import javax.swing.UIManager;
 import javax.swing.JFrame;
 
 import java.io.*;
+import java.util.LinkedList;
 
 
 /*
@@ -14,6 +15,7 @@ public class Chromagram implements Runnable, Serializable {
 	private int numberOfData = 1000;
 	public ChromaVector[] chromagram;
 	public Chord[] chordSerie;
+	private Pitch[][] noteSerie;
 	private static final int FFT_SIZE = 2048;
 	public double[][] spectrum; 
 	transient private File sound;
@@ -36,6 +38,9 @@ public class Chromagram implements Runnable, Serializable {
 	//private AmplitudeScrollPane aspTmp;
 
 	Chromagram(){
+		System.out.printf("Nouveau chromagram créé. \n");
+		System.out.printf("MidiMin : %d   MidiMax : %d \n", MIDIMIN, MIDIMAX);
+		System.out.printf("ResolutionSpectral : %f Hz \n", getSpectralResolution());
 	}
 	
 	Chromagram(String s){
@@ -45,6 +50,9 @@ public class Chromagram implements Runnable, Serializable {
 		sampling = stream.getFormat().getSampleRate();
 		newSampling = sampling/resamplingRate;
 		this.init();
+		System.out.printf("Nouveau chromagram créé. \n");
+		System.out.printf("MidiMin : %d   MidiMax : %d \n", MIDIMIN, MIDIMAX);
+		System.out.printf("ResolutionSpectral : %f Hz \n", getSpectralResolution());
 	}
 	
 	Chromagram(String s, SoundPanel sp){
@@ -55,6 +63,9 @@ public class Chromagram implements Runnable, Serializable {
 		newSampling = sampling/resamplingRate;
 		this.init();
 		this.setSoundPanel(sp);
+		System.out.printf("Nouveau chromagram créé. \n");
+		System.out.printf("MidiMin : %d   MidiMax : %d \n", MIDIMIN, MIDIMAX);
+		System.out.printf("ResolutionSpectral : %f Hz \n", getSpectralResolution());
 	}
 	
 	public void setSoundPanel(SoundPanel s){
@@ -65,6 +76,19 @@ public class Chromagram implements Runnable, Serializable {
 	public void setPath(String s){
 		path = s;
 	}
+	
+	public String getName(){
+		return name;
+	}
+	
+	public int getMidiMin(){
+		return MIDIMIN;
+	}
+	
+	public int getMidiMax(){
+		return MIDIMAX;
+	}
+	
 	
 	public void setName(String s){
 		name = s.substring(0, s.length() - 4);
@@ -86,7 +110,6 @@ public class Chromagram implements Runnable, Serializable {
 		try{
 			stream = AudioSystem.getAudioInputStream(sound);
 			numberOfData = stream.available()/(2*2*FFT_SIZE*resamplingRate); //On divise par 2 car sons 16 bits la plupart du temps et encore par deux pour la stéréo
-			System.out.println(numberOfData);
 		}catch(IOException e){
 			System.out.println("IOException");
 		}catch(UnsupportedAudioFileException e){
@@ -100,12 +123,32 @@ public class Chromagram implements Runnable, Serializable {
 		bar = prog.getBar();
 	}
 	
+	public int getFFTSize(){
+		return FFT_SIZE;
+	}
+	
+	public AudioInputStream getAudioInputStream(){
+		return stream;
+	}
+	
+	public File getFile(){
+		return sound;
+	}
+	
+	public float getNewSampling(){
+		return newSampling;
+	}
+	
 	public void setPanel(SoundPanel sp){
 		snd = sp;
 	}
 	
 	public void setAmplitudeScrollPane(AmplitudeScrollPane amp){
 		asp = amp;
+	}
+	
+	public double getSpectralResolution(){
+		return (newSampling/FFT_SIZE);
 	}
 	
 	public int getLimitation(){
@@ -322,17 +365,95 @@ public class Chromagram implements Runnable, Serializable {
 	}
 	
 	
-	
-	public static void main (String[] args){
-		try { 
-		    //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClasspath());
-			UIManager.setLookAndFeel("com.jtattoo.plaf.graphite.GraphiteLookAndFeel");
-		} catch (Exception err) {
-		    err.printStackTrace();
+	public void generateNoteSerie() throws IOException{
+		int[] array;
+		File test = new File("/home/anis/Lilypond/"+getName()+".txt");
+		FileWriter tstw = new FileWriter(test);
+		noteSerie = new Pitch[spectrum.length][10];
+		for(int k = 0; k<spectrum.length; k++){
+			array = ProcessingTools.findLocalMax(spectrum[k], (int) (Pitch.convertFreq(MIDIMIN)/(newSampling/FFT_SIZE)), (int) (Pitch.convertFreq(MIDIMAX)/(newSampling/FFT_SIZE)));
+			for(int i = 0; i< array.length; i++){
+				tstw.write(array[i] + " ");
+				if(array[i] != 0){
+					noteSerie[k][i] = new Pitch(array[i]*newSampling/FFT_SIZE);
+				}
+			}
+			tstw.write("\n");
+			tstw.flush();
 		}
-		Fenetre fen = new Fenetre();
+		tstw.close();
 	}
+	
 
+	public void generateSheetMusic(){
+		try {
+			generateNoteSerie();
+			File ff = new File("/home/anis/Lilypond/"+getName()+".ly");
+			System.out.println("Fichier créé dans /home/anis/Lilypond/"+getName()+".ly");
+			Pitch p;
+			boolean b = ff.createNewFile();
+			System.out.println(b);
+			FileWriter ffw = new FileWriter(ff);
+			ffw.write("{");
+			System.out.println(noteSerie.length);
+			for(int t = 0; t<noteSerie.length; t++){
+				ffw.write("<");
+				for(int i = 0; i < noteSerie[t].length/2; i++){
+					if(noteSerie[t][i] != null){
+						p = noteSerie[t][i];
+						ffw.write(p.toString());
+					}
+				}
+				ffw.write(">4 ");
+				ffw.flush();
+			}
+			ffw.write("}");
+			ffw.close();
+			System.out.println("Le fichier a été correctement généré");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
+	public void generateSheetMusic(String s){
+		try {
+			
+			//Mise en place des éléments de sauvegarde
+			generateNoteSerie();
+			File ff = new File("/home/anis/Lilypond/"+s+".ly");
+			System.out.println("Fichier créé dans /home/anis/Lilypond/"+s+".ly");
+			Pitch p;
+			boolean b = ff.createNewFile();
+			System.out.println(b);
+			FileWriter ffw = new FileWriter(ff);
+			
+			//Écriture dans le fichier
+			
+			ffw.write("{");
+			System.out.println(noteSerie.length);
+			for(int t = 0; t<noteSerie.length; t++){
+				ffw.write("<");
+				for(int i = 0; i < noteSerie[t].length/2; i++){
+					if(noteSerie[t][i] != null){
+						p = noteSerie[t][i];
+						ffw.write(p.toString());
+					}
+				}
+				ffw.write(">4 ");
+				ffw.flush();
+			}
+			ffw.write("}");
+			ffw.close();
+			System.out.println("Le fichier a été correctement généré");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	
 	public void sauvegarde(){
 		try
@@ -358,13 +479,24 @@ public class Chromagram implements Runnable, Serializable {
 			process();
 			System.out.println("Calcul du chromagram effectué avec succès");
 			this.sauvegarde();
-			bar.getParent().setVisible(false);
-			asp.setLaunched();
+			progBar.end();
+			asp.setLoaded();
 			asp.getParent().repaint();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public static void main (String[] args){
+		try { 
+		    //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			UIManager.setLookAndFeel("com.jtattoo.plaf.graphite.GraphiteLookAndFeel");
+		} catch (Exception err) {
+		    err.printStackTrace();
+		}
+		SharedResources sharedResources = new SharedResources();
+		Fenetre fen = new Fenetre(sharedResources);
 	}
 	
 }

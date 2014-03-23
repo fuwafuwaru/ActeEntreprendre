@@ -11,8 +11,10 @@ import java.awt.event.MouseListener;
 public class SoundPanel extends JPanel implements MouseListener {
 	public double[] graph;
 	private Fenetre parentContainer;
-	private int[] localMaximums;
+	private int[] localMaximums = {0};
 	private double coefficient = 0.05;
+	private double dh = 0.01;
+	private SharedResources sharedResources;
 	//private PrintingPanel printingPanel;
 	
 	SoundPanel(){
@@ -44,19 +46,35 @@ public class SoundPanel extends JPanel implements MouseListener {
 	}
 	
 	
+	public void setSharedResources(SharedResources sh){
+		sharedResources = sh;
+	}
+	
 	public void setGraph(double[] b){
 		graph = b;
-		localMaximums = ProcessingTools.findLocalMax(graph);
+		if(sharedResources != null){
+			if(sharedResources.currentChromagram != null){
+				localMaximums = ProcessingTools.findLocalMax(graph, (int) (Pitch.convertFreq(sharedResources.currentChromagram.getMidiMin())/sharedResources.currentChromagram.getSpectralResolution()), (int) (Pitch.convertFreq(sharedResources.currentChromagram.getMidiMin())/sharedResources.currentChromagram.getSpectralResolution()));
+			}
+		}	
 		repaint();
 	}
 	
 	public void raiseCoefficient(){
-		coefficient += 0.01;
+		coefficient += dh;
 		repaint();
 	}
 	
 	public void lowerCoefficient(){
-		coefficient -= 0.01;
+		if(coefficient - dh <= 0){
+			dh = dh/5;
+		}
+		coefficient -= dh;
+		repaint();
+	}
+	
+	public void setZoom(int c){
+		coefficient = (c/100.)*(c/100.)*(c/100.);
 		repaint();
 	}
 	

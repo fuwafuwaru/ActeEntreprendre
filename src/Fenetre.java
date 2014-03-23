@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 
 public class Fenetre extends JFrame{
@@ -7,9 +9,18 @@ public class Fenetre extends JFrame{
 	 private AmplitudeScrollPane asp;
 	 private BeatFinderManual bfm;
 	 private InfoContainer infoContainer;
+	 private Chromagram currentChromagram;
+	 public SharedResources sharedResources;
+	 private ButtonContainer buttonContainer;
+	 private JMenuBar menuBar;
+	 private JMenu fichier;
+	 public JMenuItem nouveau;
+	 public JMenuItem ouvrir;
+	 public JMenuItem enregistrer;
+	 public JMenuItem quitter;
 	 
-	 public Fenetre(){
-		 
+	 public Fenetre(SharedResources share){
+		 sharedResources = share;
 		 this.setTitle("Fenetre principale");
 		 this.setSize(1300, 900);
 		 this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -21,11 +32,19 @@ public class Fenetre extends JFrame{
 		 JPanel finalContainerSpectrum = new JPanel();
 		 JPanel inter = new JPanel();
 		 
+		 buttonContainer = new ButtonContainer();
+
+		 
+		 setMenuBar();
+		 setJMenuBar(menuBar);
+		 
 		 
 		 infoContainer = new InfoContainer();
+		 infoContainer.setSharedResources(sharedResources);
 
 		 
 		 snd = new SoundPanel();
+		 snd.setSharedResources(sharedResources);
 		 snd.setParentContainer(this);
 		 snd.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
 		 soundPanelContainer = new JScrollPane(snd);
@@ -35,17 +54,19 @@ public class Fenetre extends JFrame{
 
 		 Envelope env = new Envelope();
 		 DrawingPanel dp = new DrawingPanel(new Envelope());
+		 dp.setSharedResources(sharedResources);
 		 dp.setPreferredSize(new Dimension(2000, 400));
 		 System.out.println(dp.getWidth());
 		 asp = new AmplitudeScrollPane();
+		 asp.setSharedResources(sharedResources);
 		 //asp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		 
 		 
-		 ButtonContainer buttonContainer = new ButtonContainer();
 		 bfm = new BeatFinderManual(buttonContainer);
 		 buttonContainer.setParentContainer(this);
 		 buttonContainer.setAssociatedPanel(snd);
 		 buttonContainer.setInfoContainer(infoContainer);
+		 buttonContainer.setSharedResources(sharedResources);
 
 	        
 		 
@@ -59,7 +80,7 @@ public class Fenetre extends JFrame{
 		 
 		 JSplitPane split3 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, split, infoContainer);
 		 split3.setOneTouchExpandable(true);
-		 split3.setResizeWeight(0.8);
+		 split3.setResizeWeight(0.95);
 		 
 		 split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, split3, asp);
 		 split2.setOneTouchExpandable(true);
@@ -70,8 +91,20 @@ public class Fenetre extends JFrame{
 		 this.pack();
 		 this.setVisible(true);
 		 bfm.getFrame().setVisible(false);
+		 sharedResources.buttonContainer = buttonContainer;
+		 sharedResources.soundPanel = snd;
+		 sharedResources.infoContainer = infoContainer;
+		 sharedResources.currentChromagram = currentChromagram;
+		 sharedResources.amplitudeScrollPane = asp;
+		 sharedResources.drawingPanel = dp;
+		 
 	 }
 	 
+	 
+	 public void setCurrentChromagram(Chromagram chr){
+		 currentChromagram = chr;
+		 
+	 }
 	 
 	 public SoundPanel getSoundPanel(){
 		 return snd;
@@ -84,4 +117,46 @@ public class Fenetre extends JFrame{
 	 public void printBeatFinder(){
 		 bfm.getFrame().setVisible(true);
 	 }
+	 
+	 
+	 //Fonction qui gère la mise en place du menu supérieur
+	 
+	 
+	 public void setMenuBar(){
+		 menuBar = new JMenuBar();
+		 fichier = new JMenu("Fichier");
+		 menuBar.add(fichier);
+		 
+		 nouveau = new JMenuItem("Nouveau");
+		 fichier.add(nouveau);
+		 nouveau.addActionListener(buttonContainer);
+		 
+		 ouvrir = new JMenuItem("Ouvrir");
+		 fichier.add(ouvrir);
+		 ouvrir.addActionListener(buttonContainer);
+		 
+		 enregistrer = new JMenuItem("Enregistrer");
+		 fichier.add(enregistrer);
+		 enregistrer.addActionListener(buttonContainer);
+		 
+		 quitter = new JMenuItem("Quitter");
+		 fichier.add(quitter);
+		 quitter.addActionListener(buttonContainer);
+	 }
+	 
+	 
+	 
+	 class MenuItemListener implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+		 
+	 }
+	 
+	 
+	 
+	 
 }

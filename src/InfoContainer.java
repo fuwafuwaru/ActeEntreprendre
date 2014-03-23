@@ -19,7 +19,7 @@ public class InfoContainer extends JPanel {
 	public int tempo;
 	public int measure = 0;
 	public int timeInMeasure = 0;
-
+	private SharedResources sharedResources;
 	
 	public InfoContainer(){
 		
@@ -40,7 +40,7 @@ public class InfoContainer extends JPanel {
 		spectrumBorder.setTitleFont(spectrumBorder.getTitleFont().deriveFont(Font.BOLD ));
 		nthSpectrum.setBorder(spectrumBorder);
 		
-	    tempoLab = new JLabel("0");
+	    tempoLab = new JLabel("Pas de tempo calculé");
 	    TitledBorder tempoFinderBorder = BorderFactory.createTitledBorder("Tempo");
 	    tempoFinderBorder.setTitleFont(tempoFinderBorder.getTitleFont().deriveFont(Font.BOLD ));
 		tempoLab.setBorder(tempoFinderBorder);
@@ -68,6 +68,61 @@ public class InfoContainer extends JPanel {
 
 	}
 	
+	
+	public void setTime(){
+		
+	}
+	
+	public void setSharedResources(SharedResources sh){
+		sharedResources = sh;
+	}
+	
+	public void raiseIndex(){
+		index++;
+		float time = sharedResources.currentChromagram.getMusicTime(index);
+		int timeCount = (int) (time*60/tempo);
+		measure = (int) timeCount/4;
+		timeInMeasure = timeCount%4 + 1;
+		measureLab.setText(String.valueOf(measure));
+		timeInMeasureLab.setText(String.valueOf(timeInMeasure));
+		nthSpectrum.setText(String.valueOf(index));
+		sharedResources.soundPanel.setGraph(sharedResources.currentChromagram.spectrum[index]);
+		musicTime.setText(String.valueOf(time) + " s");
+		alledgedChord.setText(String.valueOf(sharedResources.currentChromagram.chordSerie[index]));
+	}
+	
+	
+	public void lowerIndex(){
+		if(index != 0){
+			index--;
+		}
+		float time = sharedResources.currentChromagram.getMusicTime(index);
+		int timeCount = 0;
+		if(tempo != 0){
+			timeCount = (int) (time*60/tempo);
+		}
+		measure = (int) timeCount/4;
+		timeInMeasure = timeCount%4;
+		measureLab.setText(String.valueOf(measure));
+		timeInMeasureLab.setText(String.valueOf(timeInMeasure));
+		nthSpectrum.setText(String.valueOf(index));
+		sharedResources.soundPanel.setGraph(sharedResources.currentChromagram.spectrum[index]);
+		musicTime.setText(String.valueOf(sharedResources.currentChromagram.getMusicTime(index))+" s");
+		alledgedChord.setText(String.valueOf(sharedResources.currentChromagram.chordSerie[index]));
+	}
+	
+	/*
+	 * Cette méthode est appelée après que l'utilisateur a stoppé la musique
+	 */
+	public void reInit(){
+		index = 0;
+		measure = 0;
+		timeInMeasure = 0;
+		measureLab.setText(String.valueOf(measure));
+		timeInMeasureLab.setText(String.valueOf(timeInMeasure));
+		nthSpectrum.setText(String.valueOf(index));
+
+	}
 	
 	
 }

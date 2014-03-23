@@ -58,15 +58,36 @@ public class ProcessingTools {
 		return max;
 	}
 	
-	public static int[] findLocalMax(double[] array){
-		int[] output = new int[10];   //Il faut créer variable globale donnant le max de notes qu'on s'impose pour une frame
+	public static int getMaxIndex(double[] array){
+		int i = 0;
+		int k=0;
+		double max = 0;
+		for(double x : array){
+			
+			if(x > max){
+				max = x;
+				i = k;
+			}
+			k++;
+		}
+		return i;
+	}
+	
+	public static int[] findLocalMax(double[] array, int m, int M){
+		int[] output = new int[5];   //Il faut créer variable globale donnant le max de notes qu'on s'impose pour une frame
 		double dif = 0;
-		int k = 0;
+		double ddif = 0;
+		int k = m;
 		int i = 0;
 		double max = getMax(array);
-		while(k < array.length - 2){ 
+		if(max >= 10000){
+			output[i] = getMaxIndex(array);
+			i++;
+		}
+		while(k < M){ 
 			dif = (array[k+1]-array[k])/array[k];
-			if(dif >= 2.0 && (max/array[k+1] <= 10 | max/array[k+2] <= 10)){ 
+			ddif = (array[k+2]-array[k])/array[k]; //Pour pas passer à côté des pics à montée trop lente
+			if((dif >= 1.5 || ddif >= 1.5) && (max/array[k+1] <= 2 | max/array[k+2] <= 2) && (max >= 10000)){ //Les valeurs trop basses ne doivent pas être considérées
 				double dif2 = 0.;
 				int j = 0;
 				while(j <= 4){ //On cherche le pic au plus tard quatre cases plus loin
@@ -76,7 +97,7 @@ public class ProcessingTools {
 					}
 					else{
 						dif2 = (array[k+1]-array[k])/array[k];
-						if(dif2 <= 0 && max/array[k] <= 10){ //La deuxième condition sert à ne pas marquer comme pic des amplitudes infimes
+						if(dif2 <= 0){ //La deuxième condition sert à ne pas marquer comme pic des amplitudes infimes la première indique qu'on est retombé après le pic
 							if(i < output.length){
 								output[i] = k;
 								i++;
