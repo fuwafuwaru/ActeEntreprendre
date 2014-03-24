@@ -12,6 +12,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -28,7 +29,7 @@ import javax.swing.event.ChangeListener;
 public class SoundPlayer {
 	private AudioInputStream stream;
 	private File file;
-	private Clip clip;
+	private SourceDataLine clip;
 	private DataLine.Info dataLine;
 	private SoundPanel soundPanel;
 	private ToolFrame toolFrame;
@@ -47,13 +48,19 @@ public class SoundPlayer {
 	private double musicLength;
 	private Slide slide;
 	private JLabel time = new JLabel("0:00");
+	private int totalToRead;
+	private int total;
+	private int numBytesToRead = 50000;
+	private byte[] myData = new byte[numBytesToRead];
+	private MyThread thread;
 
 	
 	SoundPlayer(Chromagram chr){
 		//stream = chr.getAudioInputStream();
 		file = chr.getFile();
 		try {
-			stream =AudioSystem.getAudioInputStream(file);
+			stream = AudioSystem.getAudioInputStream(file);
+			totalToRead = stream.available();
 			musicLength = stream.available()/(2*2*stream.getFormat().getSampleRate());
 			System.out.println("The music lasts : " + musicLength + " s");
 		} catch (UnsupportedAudioFileException e) {
@@ -73,12 +80,12 @@ public class SoundPlayer {
 		stream = au;
 		soundPanel = sp;
 		dataLine = new DataLine.Info(Clip.class, stream.getFormat());
-		try {
+		/*try {
 			clip = (Clip) AudioSystem.getLine(dataLine);
 		} catch (LineUnavailableException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 	}
 	
 	
@@ -106,44 +113,46 @@ public class SoundPlayer {
 	
 	public void play(){
 		sharedResources.drawingPanel.setLaunched();
-		try {
-			if(paused == true){
-				paused = false;
-				running = true;
-				initTimer();
-				clip.start();
-			}
-			else{
-				dataLine = new DataLine.Info(Clip.class, stream.getFormat());
-				timerPeriod = (int) (1000*currentChromagram.getFFTSize()/currentChromagram.getNewSampling());
-				try {
-					clip = (Clip) AudioSystem.getLine(dataLine);
-				} catch (LineUnavailableException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				clip.open(stream);
-				initTimer();
-				paused = false;
-				running = true;
-				clip.start();
-				System.out.println("Le son a été ouvert avec succès et la lecture commence");
-			}
-			
-		} catch (LineUnavailableException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if(paused == true){
+			paused = false;
+			running = true;
+			thread = new MyThread();
+			thread.start();
+			initTimer();
+
+			//clip.start();
 		}
+		else{
+			
+			dataLine = new DataLine.Info(SourceDataLine.class, stream.getFormat()); //avant Clip.class
+			timerPeriod = (int) (1000*currentChromagram.getFFTSize()/currentChromagram.getNewSampling());
+			try {
+				clip = (SourceDataLine) AudioSystem.getLine(dataLine);
+				clip.open(stream.getFormat());
+			} catch (LineUnavailableException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			//clip.open(stream);
+			initTimer();
+			paused = false;
+			running = true;
+			clip.start();
+			System.out.println("Le son a été ouvert avec succès et la lecture commence");
+			thread = new MyThread();
+			thread.start();
+		}
+		
+		
+		
 	}
+	
 	
 	
 	public void pause(){
 		if(paused == false && running == true){
 			paused = true;
-			clip.stop();
+			//clip.stop();
 			timer.stop();
 		}
 		
@@ -292,6 +301,36 @@ public class SoundPlayer {
 			});
 		}
 
+	}
+	
+	
+	
+	class MyThread extends Thread {
+		
+		
+	
+		public void run() {
+			while (total < totalToRead && !paused){
+				int numBytesRead;
+				try {
+					numBytesRead = stream.read(myData, 0, numBytesToRead);
+					if (numBytesRead == -1) break;
+				    total += numBytesRead; 
+				    clip.write(myData, 0, numBytesRead);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			    
+			}
+		
+		}
+
+		
+		public void pause(){
+			
+		}
+		
 	}
 
 	
