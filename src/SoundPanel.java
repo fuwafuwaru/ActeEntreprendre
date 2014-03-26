@@ -1,10 +1,15 @@
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -16,10 +21,20 @@ public class SoundPanel extends JPanel implements MouseListener {
 	private double dh = 0.01;
 	private SharedResources sharedResources;
 	//private PrintingPanel printingPanel;
+	private RightClickMenu menu;
+	private JMenuItem zoom;
+	private JMenuItem dezoom;
+	private JMenuItem open;
+	private JMenu displayMode;
+	private JMenuItem classicSpectrum;
+	private JMenuItem simpleBars;
+	private JMenuItem chromaVector;
+	
 	
 	SoundPanel(){
 		//printingPanel = new PrintingPanel(this);
 		//this.setLayout(new BorderLayout(10, 10));
+		menu = new RightClickMenu();
 		this.setBorder(BorderFactory.createTitledBorder("Spectrum"));
 		this.setSize(getMaximumSize());
 		double[] temp = new double[1000];
@@ -125,17 +140,18 @@ public class SoundPanel extends JPanel implements MouseListener {
 	public void mouseClicked(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		
-		System.out.println("mouse clicked");
 		if(arg0.getButton() == MouseEvent.BUTTON1){//Zoom
-			raiseCoefficient();
-			System.out.println("zoom");
+			menu.setVisible(false);
 		}
 		
 		else if(arg0.getButton() == MouseEvent.BUTTON3){//DeZoom
-			lowerCoefficient();
-			System.out.println("dezoom");
+			
+			menu.show(arg0.getComponent(), arg0.getX(), arg0.getY());
+
 
 		}
+		
+		
 	}
 
 
@@ -165,4 +181,75 @@ public class SoundPanel extends JPanel implements MouseListener {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	
+	class RightClickMenu extends JPopupMenu implements ActionListener {	
+		
+		RightClickMenu(){
+			
+			displayMode = new JMenu("Apparence");
+			classicSpectrum = new JMenuItem("Spectre classique");
+			simpleBars = new JMenuItem("En barre");
+			chromaVector = new JMenuItem("Vecteur de chroma");
+			
+			classicSpectrum.addActionListener(this);
+			simpleBars.addActionListener(this);
+			chromaVector.addActionListener(this);
+			
+			displayMode.add(classicSpectrum);
+			displayMode.add(simpleBars);
+			displayMode.add(chromaVector);
+			
+			
+			
+			
+			zoom = new JMenuItem("Zoom");
+			dezoom = new JMenuItem("Dezoom");
+			open = new JMenuItem("Ouvrir dans une autre fenêtre");
+			
+			zoom.addActionListener(this);
+			dezoom.addActionListener(this);
+			open.addActionListener(this);
+			
+			add(zoom);
+			add(dezoom);
+			add(open);
+			add(displayMode);
+			
+			setVisible(false);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			
+			if(e.getSource() == zoom){
+				raiseCoefficient();
+				
+			}
+			else if(e.getSource() == dezoom){
+				lowerCoefficient();
+			}
+			
+			else if(e.getSource() == open){
+				//TODO : ouvrir spectre dans une nouvelle fenêtre
+			}
+			
+			
+			else if(e.getSource() == classicSpectrum){
+				
+			}
+			
+			else if(e.getSource() == simpleBars){
+				
+			}
+			
+			else if(e.getSource() == chromaVector){
+				
+			}
+		}
+		
+		
+	}
+	
 }

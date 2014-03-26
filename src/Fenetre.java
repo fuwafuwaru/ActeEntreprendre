@@ -21,8 +21,9 @@ public class Fenetre extends JFrame{
 	 
 	 public Fenetre(SharedResources share){
 		 sharedResources = share;
-		 this.setTitle("Fenetre principale");
-		 this.setSize(1300, 900);
+
+		 this.setExtendedState(JFrame.MAXIMIZED_VERT);		
+		 this.setTitle("Eufonya");
 		 this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		 this.setLocationRelativeTo(null);
 		 this.setResizable(true);
@@ -84,13 +85,12 @@ public class Fenetre extends JFrame{
 		 
 		 split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, split3, asp);
 		 split2.setOneTouchExpandable(true);
-		 split2.setDividerLocation(this.getHeight() - 400);
+		 split2.setResizeWeight(0.9);
 
 		 //this.setContentPane(inter);
 		 this.setContentPane(split2);
 		 this.pack();
 		 this.setVisible(true);
-		 bfm.getFrame().setVisible(false);
 		 sharedResources.buttonContainer = buttonContainer;
 		 sharedResources.soundPanel = snd;
 		 sharedResources.infoContainer = infoContainer;

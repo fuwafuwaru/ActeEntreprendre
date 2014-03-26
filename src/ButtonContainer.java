@@ -1,6 +1,7 @@
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
@@ -30,10 +31,12 @@ public class ButtonContainer extends JPanel implements ActionListener {
 	private int tempo;
 	private JFileChooser choixMusique = new JFileChooser("/home/anis/workspace/acteEntreprendre/sons/");
 	private JFileChooser choixChromagram = new JFileChooser("/home/anis/workspace/acteEntreprendre/");
-	private JButton sheet = new JButton("sheet");
+	private JButton sheet = new JButton();
 	private JButton play = new JButton("Jouer le son !");
 	private JButton choisirMusique;
 	private JButton getTempo;
+	private JButton piano;
+	private JButton guitare;
 	private JLabel nomMusique;
 	private File file;
 	private String cheminMusique;
@@ -41,12 +44,12 @@ public class ButtonContainer extends JPanel implements ActionListener {
 	private JButton chargerChromagram;
 	private SharedResources sharedResources;
 	private JSlider zoom;
+	private JButton beat;
 	
 	public ButtonContainer(){	
-		this.setSize(280, 600);
-		//this.setLayout(new BoxLayout(this, 1));
+		this.setSize(280, 500);
+		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
-		this.setLayout(new GridLayout(10, 1, 5, 5));
 		this.setBorder(BorderFactory.createTitledBorder("ToolBox"));
 		
 		zoom = new JSlider();
@@ -90,10 +93,19 @@ public class ButtonContainer extends JPanel implements ActionListener {
 		chargerBorder.setTitleFont(chargerBorder.getTitleFont().deriveFont(Font.BOLD ));
 		
 
-	
+		piano = new JButton(new ImageIcon("/home/anis/workspace/acteEntreprendre/piano.png"));
+		guitare = new JButton(new ImageIcon("/home/anis/workspace/acteEntreprendre/guitarIcon.png"));
+		
+		ImageIcon sheetIcon = new ImageIcon("/home/anis/workspace/acteEntreprendre/sheetIcon.png");
+		sheet.setIcon(sheetIcon);
+		
+		play = new JButton(new ImageIcon("/home/anis/workspace/acteEntreprendre/player_play.png"));
+		
+		beat = new JButton(new ImageIcon("/home/anis/workspace/acteEntreprendre/beatIcon.png"));
 	    
 	    nomMusique = new JLabel("Pas de musique encore sélectionnée");
-		
+	    
+		piano.addActionListener(this);
 	    choisirMusique.addActionListener(this);
 	    chargerChromagram.addActionListener(this);
 	    getTempo.addActionListener(this);
@@ -102,16 +114,45 @@ public class ButtonContainer extends JPanel implements ActionListener {
 	    less.addActionListener(this);
 	    sheet.addActionListener(this);
 	    play.addActionListener(this);
-	    this.add(choisirMusique);
-	    this.add(nomMusique);
-	    this.add(launch);
-	    this.add(chargerChromagram);
-	    this.add(play);
-	    this.add(sheet);
-	    this.add(getTempo);
-	    this.add(more);
-	    this.add(less);
-	    this.add(zoom);
+	    
+	    
+	    JPanel tools1 = new JPanel();
+	    tools1.setLayout(new BoxLayout(tools1, BoxLayout.LINE_AXIS));
+	    piano.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+	    guitare.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+	    sheet.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+	    beat.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+	    tools1.add(piano);
+	    tools1.add(guitare);
+	    tools1.add(sheet);
+	    tools1.add(beat);
+
+	    
+	    
+	    JPanel tools2 = new JPanel();
+	    tools2.setLayout(new BoxLayout(tools2, BoxLayout.LINE_AXIS));
+	    play.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+	    tools2.add(play);
+	    
+
+	    JPanel navigation = new JPanel();
+		navigation.setLayout(new GridLayout(4, 1, 5, 5));
+		
+		JPanel both = new JPanel();
+		both.setLayout(new GridLayout(1, 2, 10, 5));
+		both.add(less, BorderLayout.WEST);
+		both.add(more, BorderLayout.EAST);
+
+
+	    navigation.add(nomMusique);
+	    navigation.add(launch);
+	    navigation.add(both);
+	    navigation.add(zoom);
+
+	    
+	    this.add(navigation);
+	    this.add(tools1);
+	    this.add(tools2);
 	    this.setVisible(true);
 	    this.setSize(90, 50);
 	}
@@ -195,7 +236,7 @@ public class ButtonContainer extends JPanel implements ActionListener {
 			less();				
 		}
 		
-		else if(e.getSource() == choisirMusique){
+		/*else if(e.getSource() == choisirMusique){
 			int returnVal = choixMusique.showOpenDialog(this);
 	        if (returnVal == JFileChooser.APPROVE_OPTION) {
 	            file = choixMusique.getSelectedFile();
@@ -204,14 +245,14 @@ public class ButtonContainer extends JPanel implements ActionListener {
 	        } else {
 	        }
 	        
-		}
+		}*/
 		
 		else if(e.getSource() == getTempo){
 			parentContainer.printBeatFinder();
 		}
 		
 		
-		else if(e.getSource() == chargerChromagram){
+		/*else if(e.getSource() == chargerChromagram){
 			int returnVal = choixChromagram.showOpenDialog(this);
 			if(returnVal == JFileChooser.APPROVE_OPTION){
 				try {
@@ -231,7 +272,9 @@ public class ButtonContainer extends JPanel implements ActionListener {
 				}
 				
 			}
-		}
+		}*/
+		
+		
 		
 		else if(e.getSource() == sheet){
 			SheetCreator sc = new SheetCreator(sharedResources);
@@ -246,6 +289,8 @@ public class ButtonContainer extends JPanel implements ActionListener {
 			soundPlayer.setSharedResources(sharedResources);
 			
 		}
+		
+		
 		
 		else if(e.getSource() == parentContainer.ouvrir){
 			int returnVal = choixChromagram.showOpenDialog(this);

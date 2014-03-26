@@ -490,8 +490,8 @@ public class Chromagram implements Runnable, Serializable {
 	
 	public static void main (String[] args){
 		try { 
-		    //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			UIManager.setLookAndFeel("com.jtattoo.plaf.graphite.GraphiteLookAndFeel");
+		    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			//UIManager.setLookAndFeel("com.jtattoo.plaf.graphite.GraphiteLookAndFeel");
 		} catch (Exception err) {
 		    err.printStackTrace();
 		}
