@@ -103,9 +103,12 @@ public class SoundPlayer {
 	
 	
 	private void initTimer() {    
-	      timer = new Timer(timerPeriod, toolPanel);
-	      timer.setRepeats(true);
-	      timer.start();        
+		if(timer ==null){
+			 timer = new Timer(timerPeriod, toolPanel);
+		     timer.setRepeats(true);
+		}
+	     
+	     timer.start();        
 	  }
 	
 	
@@ -113,7 +116,7 @@ public class SoundPlayer {
 	
 	public void play(){
 		sharedResources.drawingPanel.setLaunched();
-		if(paused == true){
+		if(paused == true && running == true){
 			paused = false;
 			running = true;
 			thread = new MyThread();
@@ -122,7 +125,19 @@ public class SoundPlayer {
 
 			//clip.start();
 		}
-		else{
+		else if(running == false){
+			try {
+				stream = AudioSystem.getAudioInputStream(file);
+				totalToRead = stream.available();
+				musicLength = stream.available()/(2*2*stream.getFormat().getSampleRate());
+				System.out.println("The music lasts : " + musicLength + " s");
+			} catch (UnsupportedAudioFileException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 			dataLine = new DataLine.Info(SourceDataLine.class, stream.getFormat()); //avant Clip.class
 			timerPeriod = (int) (1000*currentChromagram.getFFTSize()/currentChromagram.getNewSampling());
@@ -163,11 +178,19 @@ public class SoundPlayer {
 			paused = false;
 			running = false;
 			t = 0;
+			try {
+				stream.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			clip.close();
 			timer.stop();
 			slide.setValue(0);
 			sharedResources.drawingPanel.setCursor(0);
-			
+			sharedResources.buttonContainer.initIndex();
+			soundPanel.setGraph(currentChromagram.spectrum[0]);	
+			total = 0;
 		}
 	}
 	
@@ -254,7 +277,7 @@ public class SoundPlayer {
 			else if(arg0.getSource() == stop){
 				stop();
 			}
-			
+
 			else if(arg0.getSource() == timer){
 				if(t < currentChromagram.spectrum.length){
 					soundPanel.setGraph(currentChromagram.spectrum[(int) t]);
@@ -283,7 +306,6 @@ public class SoundPlayer {
 			setMaximum((int) musicLength);
 			setMinimum(0);
 			setValue(0);
-			setPaintTicks(true);
 			setPaintLabels(true);
 			setMinorTickSpacing(1);
 			setMajorTickSpacing(20);

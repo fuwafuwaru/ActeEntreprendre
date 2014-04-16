@@ -39,6 +39,54 @@ public class Pitch {
 		return (new Pitch(i));
 	}
 	
+	public String toSimpleString(){
+		
+		int height = midi/12;
+		String out = "";
+		
+		if(chroma == Chroma.C){
+			out =  "C";
+		}
+		else if(chroma == Chroma.Cd){
+			out =  "C#";
+		}
+		else if(chroma == Chroma.D){
+			out = "D";
+		}
+		else if(chroma == Chroma.Dd){
+			out = "D#";
+		}
+		else if(chroma == Chroma.E){
+			out = "E";
+		}
+		else if(chroma == Chroma.F){
+			out = "F";
+		}
+		else if(chroma == Chroma.Fd){
+			out = "F#";
+		}
+		else if(chroma == Chroma.G){
+			out =  "G";
+		}
+		else if(chroma == Chroma.Gd){
+			out = "G#";
+		}
+		else if(chroma == Chroma.A){
+			out = "A";
+		}
+		else if(chroma == Chroma.Ad){
+			out = "A#";
+		}
+		else if(chroma == Chroma.B){
+			out = "B";
+		}
+		else return "";
+		
+		return out;
+		
+		
+	}
+	
 	public String toString(){
 		int height = midi/12;
 		String out = "";
@@ -93,7 +141,7 @@ public class Pitch {
 			}
 		}
 		
-		return (out+" ");
+		return (out);
 	}
 	
 }

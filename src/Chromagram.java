@@ -418,11 +418,46 @@ public class Chromagram implements Runnable, Serializable {
 	
 	
 	
-	public void generateSheetMusic(String s){
+	//Cas du piano
+	
+	public void generateSheetMusic(String s, int tp){
+		
+		
+
 		try {
 			
 			//Mise en place des éléments de sauvegarde
 			generateNoteSerie();
+			String[] bufferG = new String[noteSerie.length*4]; //Il faut prendre en compte les caractères autres que notes
+			String[] bufferF = new String[noteSerie.length*4];
+			
+			//Position dans les tableaux buffer
+			int xG = 1;
+			int xF = 1;
+			
+			
+			//Longueur dernière note
+			
+			int lengthG = 1;
+			int lengthF = 1;
+			
+			int tempo = tp;
+			double lengthBeat = 60.0/tempo;
+			double lengthSpectrumFrame = FFT_SIZE/newSampling;
+			
+			System.out.println("tempo : " + tempo);
+			System.out.println("durée temps :" + lengthBeat);
+			System.out.println("durée frame :" + lengthSpectrumFrame);
+			System.out.println(lengthBeat/lengthSpectrumFrame);
+
+			
+			double valeurG = 4;
+			double valeurF = 4;
+			
+			Pitch[] tempG = new Pitch[noteSerie[0].length];
+			Pitch[] tempF = new Pitch[noteSerie[0].length];
+
+			
 			File ff = new File("/home/anis/Lilypond/"+s+".ly");
 			System.out.println("Fichier créé dans /home/anis/Lilypond/"+s+".ly");
 			Pitch p;
@@ -431,21 +466,168 @@ public class Chromagram implements Runnable, Serializable {
 			FileWriter ffw = new FileWriter(ff);
 			
 			//Écriture dans le fichier
+
 			
-			ffw.write("{");
+			ffw.write("\\score \n { ");
+			
+			
 			System.out.println(noteSerie.length);
+			
+			
 			for(int t = 0; t<noteSerie.length; t++){
-				ffw.write("<");
-				for(int i = 0; i < noteSerie[t].length/2; i++){
+				for(int i = 0; i < noteSerie[t].length; i++){
 					if(noteSerie[t][i] != null){
 						p = noteSerie[t][i];
-						ffw.write(p.toString());
+						
+						//On traite le cas clé de sol
+						if(p.getMidi() > 60){
+							System.out.println(p.toString() + " : " + bufferG[xG-1]);
+							
+							//Si la même note se prolonge
+							if(p.toString() == bufferG[xG-1]){
+								lengthG++;
+								System.out.println(lengthG);
+							}
+							
+							else{
+								valeurG = (4*lengthBeat/(lengthG*lengthSpectrumFrame));
+								
+								//TODO : traiter le cas des valeurs prolongées
+								
+								//Cas ronde, attention il faut traiter le cas où plus long que ronde
+								if(valeurG < 1){
+									valeurG = 1;
+								}
+								
+								//Cas blanche 
+								else if(valeurG < 2){
+									valeurG = 2;
+								}
+								
+								//Cas noire
+								
+								else if(valeurG < 4){
+									valeurG = 4;
+								}
+								
+								
+								//Cas croche
+								
+								
+								else if(valeurG < 8){
+									valeurG = 8;
+								}
+								
+								
+								//Cas double croche
+								
+								
+								else if(valeurG < 16){
+									valeurG = 16;
+								}
+								
+								
+								//System.out.println(valeurG);
+
+								bufferG[xG-1] = bufferG[xG-1] + ((int) (valeurG));
+								lengthG = 1;
+								bufferG[xG] = p.toString();
+								xG++;
+							}
+							
+							
+						}
+						
+						else{
+							//Si la même note se prolonge
+							if(p.toString() == bufferF[xF-1]){
+								lengthF++;
+							}
+							
+							else{
+								valeurF = (4*lengthBeat/(lengthF*lengthSpectrumFrame));
+								//System.out.println(valeurF);
+
+								//TODO : traiter le cas des valeurs prolongées
+								
+								//Cas ronde, attention il faut traiter le cas où plus long que ronde
+								if(valeurF < 1){
+									valeurF = 1;
+								}
+								
+								//Cas blanche 
+								else if(valeurF < 2){
+									valeurF = 2;
+								}
+								
+								//Cas noire
+								
+								else if(valeurF < 4){
+									valeurF = 4;
+								}
+								
+								
+								//Cas croche
+								
+								
+								else if(valeurF < 8){
+									valeurF = 8;
+								}
+								
+								
+								//Cas double croche
+								
+								
+								else if(valeurF < 16){
+									valeurF = 16;
+								}
+								
+								bufferF[xF-1] = bufferF[xF-1] + ((int) (valeurF));
+								lengthF = 1;
+								bufferF[xF] = p.toString();
+								xF++;
+							}
+						}
 					}
+					
+					
+					
+				}//Fin du deuxième for
+			
+			
+			
+			}//Fin du premier for
+			
+			//Ecriture dans le fichier
+			
+			//Ecriture de la clé de sol
+			ffw.write("<< \\new Staff \n  { \n                \\clef treble \n");
+			for(int k = 1; k < bufferG.length; k++){
+				if(bufferG[k] != null){
+					ffw.write(bufferG[k]+ " ");
+
 				}
-				ffw.write(">4 ");
-				ffw.flush();
 			}
+			ffw.write("\n } \n \n");
+				
+			
+			//Ecriture de la clé de fa
+
+			
+			ffw.write(" \\new Staff \n  { \n                \\clef bass \n");
+			for(int k = 1; k < bufferF.length; k++){
+				if(bufferF[k] != null){
+					ffw.write(bufferF[k]+ " ");
+
+				}
+			}
+			ffw.write("\n } \n >> \n");
+			
+			
+			
+			
 			ffw.write("}");
+			ffw.flush();
 			ffw.close();
 			System.out.println("Le fichier a été correctement généré");
 		} catch (IOException e) {
@@ -490,8 +672,9 @@ public class Chromagram implements Runnable, Serializable {
 	
 	public static void main (String[] args){
 		try { 
-		    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			//UIManager.setLookAndFeel("com.jtattoo.plaf.graphite.GraphiteLookAndFeel");
+		    //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			UIManager.setLookAndFeel("com.jtattoo.plaf.graphite.GraphiteLookAndFeel");
+		   // UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 		} catch (Exception err) {
 		    err.printStackTrace();
 		}

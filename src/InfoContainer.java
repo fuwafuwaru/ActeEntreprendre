@@ -86,6 +86,9 @@ public class InfoContainer extends JPanel {
 		measureLab.setText(String.valueOf(measure));
 		timeInMeasureLab.setText(String.valueOf(timeInMeasure));
 		nthSpectrum.setText(String.valueOf(index));
+		
+		//TODO : tester si index dépasse pas la taille du tableau car se produit en fin de musique
+		
 		sharedResources.soundPanel.setGraph(sharedResources.currentChromagram.spectrum[index]);
 		musicTime.setText(String.valueOf(time) + " s");
 		alledgedChord.setText(String.valueOf(sharedResources.currentChromagram.chordSerie[index]));
@@ -122,6 +125,12 @@ public class InfoContainer extends JPanel {
 		timeInMeasureLab.setText(String.valueOf(timeInMeasure));
 		nthSpectrum.setText(String.valueOf(index));
 
+	}
+	
+	public void setTempo(int t){
+		tempo = t;
+		tempoLab.setText("tempo : " + t);
+		
 	}
 	
 	

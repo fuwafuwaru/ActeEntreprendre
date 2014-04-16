@@ -16,8 +16,8 @@ import java.awt.event.MouseListener;
 public class SoundPanel extends JPanel implements MouseListener {
 	public double[] graph;
 	private Fenetre parentContainer;
-	private int[] localMaximums = {0};
-	private double coefficient = 0.05;
+	public int[] localMaximums = {0};
+	private double coefficient = 0.02;
 	private double dh = 0.01;
 	private SharedResources sharedResources;
 	//private PrintingPanel printingPanel;
@@ -29,6 +29,7 @@ public class SoundPanel extends JPanel implements MouseListener {
 	private JMenuItem classicSpectrum;
 	private JMenuItem simpleBars;
 	private JMenuItem chromaVector;
+	private DisplayMode dispMode = DisplayMode.SPECTRUM;
 	
 	
 	SoundPanel(){
@@ -56,6 +57,14 @@ public class SoundPanel extends JPanel implements MouseListener {
 		this.setVisible(true);
 	}
 	
+	
+	SoundPanel(SoundPanel snd){
+		this.graph = snd.graph;
+		this.localMaximums = snd.localMaximums;
+		
+	}
+	
+	
 	public void setParentContainer(Fenetre parent){
 		parentContainer = parent;
 	}
@@ -71,8 +80,12 @@ public class SoundPanel extends JPanel implements MouseListener {
 			if(sharedResources.currentChromagram != null){
 				localMaximums = ProcessingTools.findLocalMax(graph, (int) (Pitch.convertFreq(sharedResources.currentChromagram.getMidiMin())/sharedResources.currentChromagram.getSpectralResolution()), (int) (Pitch.convertFreq(sharedResources.currentChromagram.getMidiMin())/sharedResources.currentChromagram.getSpectralResolution()));
 			}
+			repaint();
+			if(sharedResources.ffs != null){
+				sharedResources.ffs.repaint();
+			}
 		}	
-		repaint();
+		
 	}
 	
 	public void raiseCoefficient(){
@@ -109,12 +122,16 @@ public class SoundPanel extends JPanel implements MouseListener {
 	
 	public void paint(Graphics g){
 		super.paint(g);
-		try{
-			int h = this.getHeight();
-			int w = this.getWidth();
-			g.setColor(Color.WHITE);
-			g.fillRect(0, 0, w, h);
-			g.setColor(Color.BLACK);
+		int h = this.getHeight();
+		int w = this.getWidth();
+		g.setColor(Color.WHITE);
+		g.fillRect(0, 0, w, h);
+		g.setColor(Color.BLACK);
+		
+		/*
+		 * Cas d'un style spectrum
+		 */
+		if(dispMode == DisplayMode.SPECTRUM){
 			for(int k=0; k < graph.length; k++){
 				g.setColor(new Color(35, 142, 200));
 				g.fillRect(5*(k-46),h-((int) (graph[k]*coefficient)), 2,((int) (graph[k]*coefficient)));
@@ -125,14 +142,60 @@ public class SoundPanel extends JPanel implements MouseListener {
 			}
 			g.setColor(Color.black);
 			for(int i = 53; i < 105; i++){
-				double x = Pitch.convertFreq(i);
+				double x = Pitch.convertFreq(i);				
 				int u =  (int) (x/5.38); //2048/11025
 				g.fillRect(5*(u-46), 100, 1, h-100);
 				g.drawString((new Pitch(i)).getChroma().toString(), 5*(u-46), 70);
 			}
-		}catch(NullPointerException e){
-			System.out.println("Attention NullPointerException");
 		}
+		
+		/*
+		 * Cas d'un style en barres
+		 */
+		
+		else if(dispMode == DisplayMode.BARS){
+			double sum = 0;
+			Pitch currentNote = new Pitch(46);
+			g.setColor(new Color(35, 142, 200));
+			g.setColor(Color.WHITE);
+			g.fillRect(0, 0, w, h);
+			g.setColor(Color.BLACK);
+			g.setColor(new Color(35, 142, 200));
+			int numberOfBarsDrawn = 0;
+
+			for(int k=10; k < graph.length/2; k++){ //Ce qui est trop aigu ne nous intéresse pas
+				Pitch n = new Pitch(k*5.38);
+				if(currentNote.getMidi() > n.getMidi()){
+					//La note est trop basse on s'en fout
+				}
+				else if(currentNote.getMidi() == n.getMidi()){
+					sum += graph[k]; //On somme les amplitudes qui correspondent à la même note
+				}
+				else{
+					/*for(int i = 0; i < sum*coefficient/7; i++){
+						g.fillRect(5*(k-46),h-((int) (sum*coefficient) + 7*i + 2), 10, 7);
+						sum = graph[k];
+						currentNote = n;
+					}*/
+					numberOfBarsDrawn++;
+					g.fillRect(20*(numberOfBarsDrawn),h-((int) (sum*coefficient)), 10, (int) (sum*coefficient));
+					g.setColor(Color.BLACK);
+					g.drawString(currentNote.toSimpleString(), 20*(numberOfBarsDrawn), h-((int) (sum*coefficient))-20);
+					g.setColor(new Color(35, 142, 200));
+
+					sum = graph[k];
+					currentNote = n;
+
+				}
+			}
+			
+			
+			
+		}
+		
+		
+		
+		
 	}
 
 
@@ -140,11 +203,11 @@ public class SoundPanel extends JPanel implements MouseListener {
 	public void mouseClicked(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		
-		if(arg0.getButton() == MouseEvent.BUTTON1){//Zoom
+		if(arg0.getButton() == MouseEvent.BUTTON1){
 			menu.setVisible(false);
 		}
 		
-		else if(arg0.getButton() == MouseEvent.BUTTON3){//DeZoom
+		else if(arg0.getButton() == MouseEvent.BUTTON3){
 			
 			menu.show(arg0.getComponent(), arg0.getX(), arg0.getY());
 
@@ -233,6 +296,8 @@ public class SoundPanel extends JPanel implements MouseListener {
 			
 			else if(e.getSource() == open){
 				//TODO : ouvrir spectre dans une nouvelle fenêtre
+				SoundPanel sp = sharedResources.soundPanel;
+				sharedResources.ffs = new FullFrameSpectrum(new SoundPanel(sp));
 			}
 			
 			
@@ -241,7 +306,8 @@ public class SoundPanel extends JPanel implements MouseListener {
 			}
 			
 			else if(e.getSource() == simpleBars){
-				
+				dispMode = DisplayMode.BARS;
+				repaint();
 			}
 			
 			else if(e.getSource() == chromaVector){
@@ -251,5 +317,7 @@ public class SoundPanel extends JPanel implements MouseListener {
 		
 		
 	}
+	
+	enum DisplayMode {SPECTRUM, BARS, VECTOR};
 	
 }

@@ -114,6 +114,7 @@ public class ButtonContainer extends JPanel implements ActionListener {
 	    less.addActionListener(this);
 	    sheet.addActionListener(this);
 	    play.addActionListener(this);
+	    beat.addActionListener(this);
 	    
 	    
 	    JPanel tools1 = new JPanel();
@@ -159,6 +160,7 @@ public class ButtonContainer extends JPanel implements ActionListener {
 	
 	public void setTempo(int t){
 		tempo = t;
+		ic.setTempo(t);
 	}
 	
 	
@@ -189,6 +191,9 @@ public class ButtonContainer extends JPanel implements ActionListener {
 		ic.raiseIndex();
 	}
 	
+	public void initIndex(){
+		ic.index =0;
+	}
 	
 	public void less(){
 		ic.lowerIndex();
@@ -247,7 +252,8 @@ public class ButtonContainer extends JPanel implements ActionListener {
 	        
 		}*/
 		
-		else if(e.getSource() == getTempo){
+		else if(e.getSource() == beat){
+			//BeatFinderManual bfm = new BeatFinderManual(this);
 			parentContainer.printBeatFinder();
 		}
 		

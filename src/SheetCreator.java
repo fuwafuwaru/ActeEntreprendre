@@ -24,6 +24,7 @@ public class SheetCreator {
 	private JButton generate = new JButton("Generate sheet !");
 	private Slide slide;
 	private JLabel direction2 = new JLabel("Choisissez la densité de note");
+	private JTextField tempo = new JTextField("");
 	
 	
 	SheetCreator(SharedResources sh){
@@ -76,10 +77,12 @@ public class SheetCreator {
 			outputName = new JTextField(sharedResources.currentChromagram.getName());
 			generate.addActionListener(this);
 			slide = new Slide();
+			tempo.setText("" + sharedResources.infoContainer.tempo);
 			add(direction);
 			add(outputName);
 			add(direction2);
 			add(slide);
+			add(tempo);
 			add(generate);
 			
 		}
@@ -89,7 +92,7 @@ public class SheetCreator {
 			
 			if(arg0.getSource() == generate){
 				
-				sharedResources.currentChromagram.generateSheetMusic(outputName.getText());
+				sharedResources.currentChromagram.generateSheetMusic(outputName.getText(), Integer.parseInt(tempo.getText()));
 				sharedResources.sheetCreator.setVisible(false);
 			}
 			

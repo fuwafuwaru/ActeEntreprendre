@@ -22,7 +22,8 @@ public class Fenetre extends JFrame{
 	 public Fenetre(SharedResources share){
 		 sharedResources = share;
 
-		 this.setExtendedState(JFrame.MAXIMIZED_VERT);		
+		 //this.setExtendedState(JFrame.MAXIMIZED_VERT);		
+		 this.setSize(1300, 1000);
 		 this.setTitle("Eufonya");
 		 this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		 this.setLocationRelativeTo(null);

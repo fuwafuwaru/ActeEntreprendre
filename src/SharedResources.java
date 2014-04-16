@@ -7,6 +7,6 @@ public class SharedResources {
 	public SoundPanel soundPanel;
 	public AmplitudeScrollPane amplitudeScrollPane;
 	public SheetCreator sheetCreator;
-	
+	public FullFrameSpectrum ffs;
 	
 }
