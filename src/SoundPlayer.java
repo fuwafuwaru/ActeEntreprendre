@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -14,6 +15,7 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -22,6 +24,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.Timer;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -204,7 +207,7 @@ public class SoundPlayer {
 	class ToolFrame extends JFrame{
 		
 		ToolFrame(){
-			setSize(500, 200);
+			setSize(500, 120);
 			toolPanel = new ToolPanel();
 			setContentPane(toolPanel);
 			setVisible(true);
@@ -223,8 +226,9 @@ public class SoundPlayer {
 	class ToolPanel extends JPanel implements ActionListener{
 		
 		ToolPanel(){
-			setSize(500, 200);
-			setLayout(new GridLayout(2, 1, 5, 5));
+			setSize(500, 120);
+			this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+			this.setAlignmentX(CENTER_ALIGNMENT);
 			JPanel firstContainer = new JPanel();
 			JPanel secondContainer = new JPanel();
 			slide = new Slide();
@@ -237,31 +241,32 @@ public class SoundPlayer {
 			ImageIcon icStop = new ImageIcon("/home/anis/workspace/acteEntreprendre/player_stop.png");
 			stop.setIcon(icStop);
 			
+			play.setBorder(BorderFactory.createEmptyBorder());
+			play.setContentAreaFilled(false);
+			pause.setBorder(BorderFactory.createEmptyBorder());
+			pause.setContentAreaFilled(false);
+			stop.setBorder(BorderFactory.createEmptyBorder());
+			stop.setContentAreaFilled(false);
 			
-			/*try {
-			    Image img = ImageIO.read(getClass().getResource("/home/anis/workspace/acteEntreprendre/player_pause.png"));
-			    pause.setIcon(new ImageIcon(img));
-			  } catch (IOException ex) {
-					pause = new JButton("pause");
-			  }
-			
-			try {		nthSpectrum.setText(String.valueOf(index));
 
-			    Image img = ImageIO.read(getClass().getResource("/home/anis/workspace/acteEntreprendre/player_stop.png"));
-			    stop.setIcon(new ImageIcon(img));
-			  } catch (IOException ex) {
-					stop = new JButton("stop");
-			  }*/
 			play.addActionListener(this);
 			pause.addActionListener(this);
 			stop.addActionListener(this);
+			
+			firstContainer.setLayout(new BoxLayout(firstContainer, BoxLayout.LINE_AXIS));
+			firstContainer.setAlignmentX(CENTER_ALIGNMENT);
+			firstContainer.setBorder(new EmptyBorder(5, 5, 5, 5));
+			
 			firstContainer.add(play);
 			firstContainer.add(pause);
 			firstContainer.add(stop);
+			
 			secondContainer.add(slide);
 			secondContainer.add(time);
-			add(firstContainer, BorderLayout.NORTH);
-			add(secondContainer, BorderLayout.CENTER);
+			secondContainer.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+			add(secondContainer, BorderLayout.NORTH);
+			add(firstContainer, BorderLayout.CENTER);
 		}
 
 		@Override
@@ -303,21 +308,19 @@ public class SoundPlayer {
 	
 	public class Slide extends JSlider{
 		public Slide(){
+			this.setPreferredSize(new Dimension(400, 20));
 			setMaximum((int) musicLength);
 			setMinimum(0);
 			setValue(0);
-			setPaintLabels(true);
-			setMinorTickSpacing(1);
-			setMajorTickSpacing(20);
 			addChangeListener(new ChangeListener(){
 				public void stateChanged(ChangeEvent event){
 					int min = ((JSlider)event.getSource()).getValue()/60;
 					int sec = ((JSlider)event.getSource()).getValue()%60;
 					if(sec < 10){
-						time.setText(min + ":0" + sec);
+						time.setText(min + ":0" + sec + "/" + ((int) (musicLength/60)) + ":" + ((int) (musicLength))%60);
 					}
 					else{
-						time.setText(min + ":" + sec);
+						time.setText(min + ":" + sec + "/" + ((int) (musicLength/60)) + ":" + ((int) (musicLength))%60);
 					}
 				}
 			});
@@ -332,7 +335,7 @@ public class SoundPlayer {
 		
 	
 		public void run() {
-			while (total < totalToRead && !paused){
+			while (total < totalToRead && !paused && running){
 				int numBytesRead;
 				try {
 					numBytesRead = stream.read(myData, 0, numBytesToRead);
