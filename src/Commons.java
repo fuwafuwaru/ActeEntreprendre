@@ -12,6 +12,8 @@ public class Commons {
 			 Chord.FdM, Chord.Adm, Chord.CdM, Chord.Fm, Chord.GdM, Chord.Cm,
 			 Chord.DdM, Chord.Gm, Chord.AdM, Chord.Dm, Chord.FM, Chord.Am};*/
 	 
+	 
+	 
 	 public static void initCircle(){
 		 Chord c = Chord.CM;
 		 circleOfFifth[0] = c;
@@ -27,6 +29,7 @@ public class Commons {
 		 }
 	 }
 	 
+	 
 	 public static int computeDistance(Chord a, Chord b){
 		 int k = 0;
 		 int j = 0;
@@ -34,12 +37,24 @@ public class Commons {
 			 if(circleOfFifth[i] == a ){
 				 k = i;
 			 }
-			 else if(circleOfFifth[i] == b){
+			 if(circleOfFifth[i] == b){
 				 j = i;
+
 			 }
 		 }
 		 
-		 return (Math.abs(k-j)%13);
+		 if(Math.abs(k-j) < 12){
+			 return(Math.abs(k-j));
+			 
+		 }
+		 
+		 else if(Math.abs(k-j) > 12){
+			 return (Math.abs(Math.abs(k-j) - 24));
+			 
+		 }
+		 else{
+			 return (Math.abs(k-j));
+		 }
 	 }
 	 
 	 public static double[] permuteRight(double[] array, int i){
@@ -53,16 +68,15 @@ public class Commons {
 	 public static void initMatrix(){
 		 int dist = 0;
 		 for(int k = 0; k<24; k++){
-			 dist = computeDistance(Chord.CM, Chord.values()[k]);
-			 transitionMatrix[0][k] = (12 - dist + epsilon)/(144+24*epsilon);
+			 for(int j = 0; j<24; j++){
+				 dist = computeDistance(Chord.values()[j], Chord.values()[k]);
+				 transitionMatrix[j][k] = (12 - dist + epsilon)/(144+24*epsilon);
+			 }
+			
 		 }
-		 for(int i = 1; i < 24; i++){
-			 transitionMatrix[i] = permuteRight(transitionMatrix[0], i);
-		 }
-		 
 	 }
 	 
-	/* public static void main(String[] args){
+	 public static void main(String[] args){
 		 initCircle();
 		 System.out.print("{");
 		 for(int k=0; k<24; k++){
@@ -70,7 +84,7 @@ public class Commons {
 		 }
 		 System.out.print("}");
 		 System.out.println("");
-		 System.out.println(computeDistance(Chord.CM, Chord.FdM));
+		 System.out.println(computeDistance(Chord.AM, Chord.AM));
 		 initMatrix();
 		 System.out.print("{");
 		 for(int k = 0; k< 24; k++){
@@ -87,6 +101,21 @@ public class Commons {
 			 }
 		 }
 		 System.out.print("}");
+	 }
+	 
+	 
+	/* public static void main(String[] args){
+		 
+		 
+		 initCircle();
+		 System.out.println(computeDistance(Chord.Adm, Chord.CM));
+		 for(Chord c : circleOfFifth){
+			 
+			 System.out.println(c);
+			 
+		 }
+		 
+	 
 	 }*/
 	 
 }

@@ -44,6 +44,7 @@ public class ButtonContainer extends JPanel implements ActionListener {
 	private JButton chargerChromagram;
 	private SharedResources sharedResources;
 	private JSlider zoom;
+	private JSlider scaleX;
 	private JButton beat;
 	
 	public ButtonContainer(){	
@@ -60,6 +61,17 @@ public class ButtonContainer extends JPanel implements ActionListener {
 		zoom.addChangeListener(new ChangeListener(){
 				public void stateChanged(ChangeEvent event){
 					associatedPanel.setZoom(((JSlider)event.getSource()).getValue());
+				}
+			});
+		
+		scaleX = new JSlider();
+		scaleX.setMaximum(100);
+		scaleX.setMinimum(0);
+		scaleX.setValue(50);
+		scaleX.setPaintTicks(false);
+		scaleX.addChangeListener(new ChangeListener(){
+				public void stateChanged(ChangeEvent event){
+					associatedPanel.setScaleX(((JSlider)event.getSource()).getValue());
 				}
 			});
 		
@@ -137,7 +149,7 @@ public class ButtonContainer extends JPanel implements ActionListener {
 	    
 
 	    JPanel navigation = new JPanel();
-		navigation.setLayout(new GridLayout(4, 1, 5, 5));
+		navigation.setLayout(new GridLayout(5, 1, 5, 5));
 		
 		JPanel both = new JPanel();
 		both.setLayout(new GridLayout(1, 2, 10, 5));
@@ -149,6 +161,7 @@ public class ButtonContainer extends JPanel implements ActionListener {
 	    navigation.add(launch);
 	    navigation.add(both);
 	    navigation.add(zoom);
+	    navigation.add(scaleX);
 
 	    
 	    this.add(navigation);

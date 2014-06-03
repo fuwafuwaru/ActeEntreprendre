@@ -17,7 +17,8 @@ public class SoundPanel extends JPanel implements MouseListener {
 	public double[] graph;
 	private Fenetre parentContainer;
 	public int[] localMaximums = {0};
-	private double coefficient = 0.02;
+	private double coefficient = 0.03125;
+	private double coefficientX = 1;
 	private double dh = 0.01;
 	private SharedResources sharedResources;
 	//private PrintingPanel printingPanel;
@@ -30,6 +31,9 @@ public class SoundPanel extends JPanel implements MouseListener {
 	private JMenuItem simpleBars;
 	private JMenuItem chromaVector;
 	private DisplayMode dispMode = DisplayMode.SPECTRUM;
+	private double[] barGraph;
+	private int[] localBarMaximum;
+
 	
 	
 	SoundPanel(){
@@ -102,9 +106,20 @@ public class SoundPanel extends JPanel implements MouseListener {
 	}
 	
 	public void setZoom(int c){
-		coefficient = (c/100.)*(c/100.)*(c/100.);
+		coefficient = (c/100.)*(c/100.)*(c/100.)*(c/100.)*(c/100.);
 		repaint();
 	}
+	
+	
+	public void setScaleX(int s){
+		
+		coefficientX = s/50.;
+		repaint();
+		
+		
+	}
+	
+	
 	
 	/*public class PrintingPanel extends JPanel{
 		private SoundPanel sp;
@@ -149,6 +164,8 @@ public class SoundPanel extends JPanel implements MouseListener {
 			}
 		}
 		
+		
+		
 		/*
 		 * Cas d'un style en barres
 		 */
@@ -162,8 +179,9 @@ public class SoundPanel extends JPanel implements MouseListener {
 			g.setColor(Color.BLACK);
 			g.setColor(new Color(35, 142, 200));
 			int numberOfBarsDrawn = 0;
-
-			for(int k=10; k < graph.length/2; k++){ //Ce qui est trop aigu ne nous intéresse pas
+			
+			
+			for(int k=10; k < graph.length; k++){ //Ce qui est trop aigu ne nous intéresse pas
 				Pitch n = new Pitch(k*5.38);
 				if(currentNote.getMidi() > n.getMidi()){
 					//La note est trop basse on s'en fout
@@ -178,11 +196,10 @@ public class SoundPanel extends JPanel implements MouseListener {
 						currentNote = n;
 					}*/
 					numberOfBarsDrawn++;
-					g.fillRect(20*(numberOfBarsDrawn),h-((int) (sum*coefficient)), 10, (int) (sum*coefficient));
+					g.fillRect((int) (20*coefficientX*(numberOfBarsDrawn)),h-((int) (sum*coefficient)), (int) (10*coefficientX), (int) (sum*coefficient));
 					g.setColor(Color.BLACK);
-					g.drawString(currentNote.toSimpleString(), 20*(numberOfBarsDrawn), h-((int) (sum*coefficient))-20);
+					g.drawString(currentNote.toSimpleString(), (int)(20*(numberOfBarsDrawn)*coefficientX), h-((int) (sum*coefficient))-20);
 					g.setColor(new Color(35, 142, 200));
-
 					sum = graph[k];
 					currentNote = n;
 

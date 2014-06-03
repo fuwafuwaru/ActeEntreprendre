@@ -91,11 +91,12 @@ public class ChromaVector implements Serializable {
 	
 	/*
 	 * We take into account the probabilty of having a transition from the previous alledged chord to the tested potential chord
-	 * to perform the computation of the likeliest current alledged chord
+	 * to perform the computation of the likeliest current alledged chord. The weight is the coefficient of the 
+	 * markov transition matrix defined in the interface CommonsInterface.
 	 */
 	
 	public Chord findMaxWeightedCorrelation(Chord previousChord){
-		Chord tmp = Chord.values()[0];;
+		Chord tmp = Chord.values()[0];
 		double maxCorrel=0.;
 		double correl=0;
 		for(Chord c : Chord.values()){

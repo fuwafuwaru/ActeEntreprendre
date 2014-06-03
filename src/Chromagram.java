@@ -256,6 +256,16 @@ public class Chromagram implements Runnable, Serializable {
     }
     
     
+    /*
+     * Cette fonction réalise l'obtention du chromagram de la façon suivante : tant que possible on rempli le buffer
+     * avec les données prises dans le stream précédemment ouvert. Sur ce tableau de byte on effectue les étapes de 
+     * pre-processing. Puis on converti le tableau obtenu en échelle midi.
+     * À la fin de la boucle on ajoute à chordSerie l'accord calculé pour le buffer en question. Implicitement est 
+     * sélectionnée une méthode de retrieval (avec ou sans Markov). Il serait bien d'ajouter un paramètre proposant de
+     * choisir les paramètres de reconnaissance.
+     * 
+     */
+    
 	
 	public void getChromagram() throws IOException{//Il faut filtrer les valeurs trop basses au début qui pourrissent
 		int k = 0;
@@ -288,7 +298,7 @@ public class Chromagram implements Runnable, Serializable {
 			}
 			else{
 				if(k > 0 && chordSerie[k-1] != null){
-					chordSerie[k] = chrv.findMaxCorrelation();
+					chordSerie[k] = chrv.findMaxWeightedCorrelation(chordSerie[k-1]);
 				}
 				else{
 					chordSerie[k] = chrv.findMaxCorrelation();
@@ -297,6 +307,8 @@ public class Chromagram implements Runnable, Serializable {
 			k++;
 		}
 	}
+	
+	
 	
 	/*public void getOneMoreForSpectrum() throws IOException{
 		stream.read(buffer);
