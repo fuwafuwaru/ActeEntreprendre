@@ -20,7 +20,7 @@ public class SoundPanel extends JPanel implements MouseListener {
 	private double coefficient = 0.03125;
 	private double coefficientX = 1;
 	private double dh = 0.01;
-	private SharedResources sharedResources;
+	public SharedResources sharedResources;
 	//private PrintingPanel printingPanel;
 	private RightClickMenu menu;
 	private JMenuItem zoom;
@@ -77,6 +77,8 @@ public class SoundPanel extends JPanel implements MouseListener {
 	public void setSharedResources(SharedResources sh){
 		sharedResources = sh;
 	}
+	
+	
 	
 	public void setGraph(double[] b){
 		graph = b;

@@ -1,3 +1,5 @@
+import javax.swing.JPanel;
+
 
 public class SharedResources {
 	public DrawingPanel drawingPanel;
@@ -8,5 +10,6 @@ public class SharedResources {
 	public AmplitudeScrollPane amplitudeScrollPane;
 	public SheetCreator sheetCreator;
 	public FullFrameSpectrum ffs;
+	public ToolPanel playerPanel;
 	
 }

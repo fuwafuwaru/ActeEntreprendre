@@ -145,6 +145,8 @@ public class Chromagram implements Runnable, Serializable {
 	
 	public void setAmplitudeScrollPane(AmplitudeScrollPane amp){
 		asp = amp;
+		asp.getDrawingPanel().getEnvelope().setCurrentGraph(numberOfData*FFT_SIZE);
+		System.out.println("Nombre de données: " + numberOfData*FFT_SIZE);
 	}
 	
 	public double getSpectralResolution(){
@@ -676,6 +678,8 @@ public class Chromagram implements Runnable, Serializable {
 			progBar.end();
 			asp.setLoaded();
 			asp.getParent().repaint();
+			snd.sharedResources.currentChromagram = this;
+			asp.setDrawingPanel(new DrawingPanel(asp.getDrawingPanel().getEnvelope()));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -51,19 +51,26 @@ public class Envelope {
 		return Math.max(mMinValue, Math.min(mMaxValue, value)); 
 	}
 	
+	public void setCurrentGraph(int n){
+		currentGraph = new EnvPoint[n];
+	}
+	
 	
 	public int getIndex(){
 		return index;
 	}
 	
 	//Add the values of an array at the end of the list
+	//Pour le moment offsetInArray ne sert à rien
 	public void clip (double[] array, int offsetInArray, int length){
 		/*for(int k = offsetInArray; k < Math.max(array.length, offsetInArray+length - 1); k++){
 			currentGraph.add(new EnvPoint(array[k]));
 		}*/
+		double tmp = 0;
 		int k = 0;
-		for(k = 0; k < Math.max(array.length, offsetInArray+length - 1) && k+index < 500000; k++){
-			currentGraph[index+k] = new EnvPoint(array[k+offsetInArray]);
+		for(k = 0; k < array.length; k++){
+			currentGraph[index+k] = new EnvPoint(array[k]);
+			tmp = 0;
 		}
 		index += array.length;
 	}

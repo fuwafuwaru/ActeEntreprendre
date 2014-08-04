@@ -18,10 +18,11 @@ public class AmplitudeScrollPane extends JPanel {
 	private SharedResources sharedResources;
 	
 	AmplitudeScrollPane(){
-		this.setSize(1300, 500);
+		this.setSize(2000, 100);
 		this.setLayout(new BorderLayout());
 		drawingPanel = new DrawingPanel(new Envelope());
 		JScrollPane jsp = new JScrollPane(drawingPanel);
+		jsp.setPreferredSize(new Dimension(2000, 120));
 		this.add(jsp, BorderLayout.CENTER);
 		this.setVisible(true);
 	}
@@ -52,6 +53,10 @@ public class AmplitudeScrollPane extends JPanel {
 	
 	public DrawingPanel getDrawingPanel(){
 		return drawingPanel;
+	}
+	
+	public void setDrawingPanel(DrawingPanel d){
+		drawingPanel = d;
 	}
 	
 	public void initEnvelope(){

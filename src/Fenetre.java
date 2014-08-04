@@ -1,4 +1,6 @@
 import javax.swing.*;
+
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,12 +21,13 @@ public class Fenetre extends JFrame{
 	 public JMenuItem enregistrer;
 	 public JMenuItem quitter;
 	 
+	 
 	 public Fenetre(SharedResources share){
 		 sharedResources = share;
 
 		 //this.setExtendedState(JFrame.MAXIMIZED_VERT);		
 		 this.setSize(1300, 1000);
-		 this.setTitle("Eufonya");
+		 this.setTitle("Meloware");
 		 this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		 this.setLocationRelativeTo(null);
 		 this.setResizable(true);
@@ -57,7 +60,7 @@ public class Fenetre extends JFrame{
 		 Envelope env = new Envelope();
 		 DrawingPanel dp = new DrawingPanel(new Envelope());
 		 dp.setSharedResources(sharedResources);
-		 dp.setPreferredSize(new Dimension(2000, 400));
+		 dp.setPreferredSize(new Dimension(2000, 200));
 		 System.out.println(dp.getWidth());
 		 asp = new AmplitudeScrollPane();
 		 asp.setSharedResources(sharedResources);
@@ -84,9 +87,15 @@ public class Fenetre extends JFrame{
 		 split3.setOneTouchExpandable(true);
 		 split3.setResizeWeight(0.95);
 		 
-		 split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, split3, asp);
+		 ToolPanel playerPanel = new ToolPanel(); 
+		 
+		 JSplitPane split4 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, asp, playerPanel);
+		 split4.setOneTouchExpandable(false); 
+		 split4.setResizeWeight(0.5);
+		 
+		 split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, split3, split4);
 		 split2.setOneTouchExpandable(true);
-		 split2.setResizeWeight(0.9);
+		 split2.setResizeWeight(0.95);
 
 		 //this.setContentPane(inter);
 		 this.setContentPane(split2);
@@ -98,6 +107,8 @@ public class Fenetre extends JFrame{
 		 sharedResources.currentChromagram = currentChromagram;
 		 sharedResources.amplitudeScrollPane = asp;
 		 sharedResources.drawingPanel = dp;
+		 sharedResources.playerPanel = playerPanel;
+		 playerPanel.setSharedResources(sharedResources);
 		 
 	 }
 	 
@@ -110,6 +121,8 @@ public class Fenetre extends JFrame{
 	 public SoundPanel getSoundPanel(){
 		 return snd;
 	 }
+	 
+
 	 
 	 public AmplitudeScrollPane getAmplitudeScrollPane(){
 		 return asp;
